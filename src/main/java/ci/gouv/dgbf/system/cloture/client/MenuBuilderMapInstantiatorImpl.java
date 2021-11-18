@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.collectif.client;
+package ci.gouv.dgbf.system.cloture.client;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -14,14 +14,14 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 	@Override
 	protected void __instantiateSessionMenuBuilderItems__(Object key, MenuBuilder sessionMenuBuilder, Object request,Principal principal) {
 		sessionMenuBuilder.addItems(
-				__inject__(MenuItemBuilder.class).setCommandableName("Elaboration").setCommandableIcon(Icon.SUITCASE)
-				/*.addChild(
-						__inject__(MenuItemBuilder.class).setCommandableName("Saisir les dépenses").setCommandableNavigationIdentifier("activityCostUnitFundingEditAdjustmentsView").setCommandableIcon(Icon.PENCIL)
-						,__inject__(MenuItemBuilder.class).setCommandableName("Saisir les resources").setCommandableNavigationIdentifier("activityRevenueCostUnitEditAdjustmentsView").setCommandableIcon(Icon.BANK)
+				__inject__(MenuItemBuilder.class).setCommandableName("Cloture").setCommandableIcon(Icon.SUITCASE)
+				.addChild(
+						__inject__(MenuItemBuilder.class).setCommandableName("Opérations").setCommandableNavigationIdentifier("operationListView").setCommandableIcon(Icon.LIST)
+						//,__inject__(MenuItemBuilder.class).setCommandableName("Saisir les resources").setCommandableNavigationIdentifier("activityRevenueCostUnitEditAdjustmentsView").setCommandableIcon(Icon.BANK)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Finex").setCommandableNavigationIdentifier("activityCostUnitFundingEditAdjustmentsFinexView").setCommandableIcon(Icon.PENCIL)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lignes").setCommandableNavigationIdentifier("activityCostUnitFundingListView").setCommandableIcon(Icon.LIST)
-						,__inject__(MenuItemBuilder.class).setCommandableName("Incohérences").setCommandableNavigationIdentifier("activityCostUnitFundingDashboardListWhereAvailablePaymentCreditIsNotEnoughView").setCommandableIcon(Icon.EYE)
-						)*/
-				);		
+						//,__inject__(MenuItemBuilder.class).setCommandableName("Incohérences").setCommandableNavigationIdentifier("activityCostUnitFundingDashboardListWhereAvailablePaymentCreditIsNotEnoughView").setCommandableIcon(Icon.EYE)
+						)
+				);
 	}	
 }

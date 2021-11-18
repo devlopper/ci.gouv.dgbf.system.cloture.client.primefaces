@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.collectif.client;
+package ci.gouv.dgbf.system.cloture.client;
 
 import java.io.Serializable;
 
