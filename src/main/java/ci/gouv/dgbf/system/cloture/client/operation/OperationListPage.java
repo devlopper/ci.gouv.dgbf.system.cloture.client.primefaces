@@ -90,7 +90,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
-		dataTable.getOrderNumberColumn().setWidth("60");
+		dataTable.getOrderNumberColumn().setWidth("20");
 		
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,OperationExecutePage.OUTCOME, MenuItem.FIELD_VALUE,"Exécuter",MenuItem.FIELD_ICON,"fa fa-gear");
 		dataTable.setEntityIdentifierParameterName(Parameters.OPERATION_IDENTIFIER);
@@ -112,19 +112,24 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Operation.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "70");
+				map.put(Column.FIELD_WIDTH, "40");
 			}else if(Operation.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
 			}else if(Operation.FIELD_START_DATE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exécutable à partir du");
+				map.put(Column.FIELD_WIDTH, "120");
 			}else if(Operation.FIELD_EXECUTION_BEGIN_DATE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exécution démarrée le");
+				map.put(Column.FIELD_WIDTH, "120");
 			}else if(Operation.FIELD_EXECUTION_END_DATE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exécution terminée le");
+				map.put(Column.FIELD_WIDTH, "120");
 			}else if(Operation.FIELD_TRIGGER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Déclencheur");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Operation.FIELD_EXECUTION_STATUS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Status");
+				map.put(Column.FIELD_WIDTH, "100");
 			}
 			return map;
 		}

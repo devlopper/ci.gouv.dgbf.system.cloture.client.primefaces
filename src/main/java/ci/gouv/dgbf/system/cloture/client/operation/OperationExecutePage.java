@@ -11,7 +11,6 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.session.SessionHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
-import org.cyk.utility.__kernel__.user.interface_.message.Message;
 import org.cyk.utility.__kernel__.user.interface_.message.MessageRenderer;
 import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.user.interface_.message.Severity;
@@ -54,12 +53,11 @@ public class OperationExecutePage extends AbstractPageContainerManagedImpl imple
 	public void execute() {
 		OperationService operationService = (OperationService) specificServiceGetter.get(Operation.class);
 		try {
-			operationService.execute(operation.getIdentifier(), SessionHelper.getUserName(), Boolean.TRUE);
+			operationService.execute(operation.getIdentifier(), SessionHelper.getUserName(), Boolean.FALSE);
 			Redirector.getInstance().redirect(new Redirector.Arguments().setOutcome(OperationListPage.OUTCOME));			
 		} catch (WebApplicationException exception) {
 			String message = ResponseHelper.getEntity(String.class, exception.getResponse());
-			__inject__(MessageRenderer.class).render(new Message().setSummary(message).setDetails(message).setSeverity(Severity.ERROR)
-					,List.of(RenderType.INLINE, RenderType.DIALOG,RenderType.GROWL));
+			__inject__(MessageRenderer.class).render(message,Severity.ERROR,List.of(RenderType.INLINE, RenderType.DIALOG));
 		}
 	}
 	
