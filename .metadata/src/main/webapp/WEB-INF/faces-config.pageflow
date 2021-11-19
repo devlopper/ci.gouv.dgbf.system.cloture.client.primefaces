@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf16370776028600" configfile="/cloture-client-primefaces/src/main/webapp/WEB-INF/faces-config.xml">
-  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="178" id="pf16372463792521" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16372463792522" path="*"/>
+  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="370" id="pf16372463792521" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16372463792522 pf16372641982404" path="*"/>
   <nodes xsi:type="pageflow:PFPage" name="private/operation/list/index.jsf" x="338" y="178" id="pf16372463792523" referenceLink="//@navigationRule.0/@navigationCase.0/@toViewId|" inlinks="pf16372463792522" path="/private/operation/list/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/operation/execute/index.jsf" x="338" y="562" id="pf16372641982405" referenceLink="//@navigationRule.0/@navigationCase.1/@toViewId|" inlinks="pf16372641982404" path="/private/operation/execute/index.jsf"/>
   <links id="pf16372463792522" target="pf16372463792523" source="pf16372463792521" outcome="operationListView" redirect="true"/>
+  <links id="pf16372641982404" target="pf16372641982405" source="pf16372463792521" outcome="operationExecuteView" redirect="true"/>
 </pageflow:Pageflow>
