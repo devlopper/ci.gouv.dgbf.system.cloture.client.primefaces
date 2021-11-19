@@ -1,1 +1,1 @@
-docker build --tag "mic-collectif:latest" ../../
+docker build --tag "mic-cloture:latest" ../../

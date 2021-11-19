@@ -7,5 +7,5 @@ set mytime=%mytime: =0%
 
 SET timestamp=v0.0.0-%mydate%%mytime%
 echo Publishing with time stamp : %timestamp% >> push_outputs.txt
-docker tag mic-collectif 10.3.4.18:5000/mic-collectif:%timestamp% >> push_outputs.txt
-docker push 10.3.4.18:5000/mic-collectif:%timestamp% >> push_outputs.txt
+docker tag mic-cloture 10.3.4.18:5000/mic-cloture:%timestamp% >> push_outputs.txt
+docker push 10.3.4.18:5000/mic-cloture:%timestamp% >> push_outputs.txt

@@ -119,14 +119,16 @@
 		<profile>
 			<id>prod</id>
 			<properties>
+				<!--
 				<project.build.file.name>cloture</project.build.file.name>
 				<jboss-web.context-root>/cloture</jboss-web.context-root>
+				-->
 				<cyk.variable.system.web.context>/cloture</cyk.variable.system.web.context>
 				<deployment.client.proxy.host>mic-cloture-api</deployment.client.proxy.host>
 				<cyk.variable.keycloak.enabled>true</cyk.variable.keycloak.enabled>
 				<cyk.variable.system.proxy.uniform.resource.identifier>http://mic-cloture-api/api</cyk.variable.system.proxy.uniform.resource.identifier>
 				<cyk.variable.system.security.authentication.enable>true</cyk.variable.system.security.authentication.enable>
-				<cyk.variable.user.interface.theme.menu.is.dynamic>true</cyk.variable.user.interface.theme.menu.is.dynamic>
+				<cyk.variable.user.interface.theme.menu.is.dynamic>false</cyk.variable.user.interface.theme.menu.is.dynamic>
 			</properties>
 		</profile>
 		

@@ -1,1 +1,1 @@
-docker rm $(docker stop $(docker ps -a -q --filter ancestor=mic-collectif))
+docker rm $(docker stop $(docker ps -a -q --filter ancestor=mic-cloture))

@@ -1,1 +1,2 @@
+REM docker run -i --rm -p 8080:8080 mic-cloture:latest
 docker run -i --rm -p 8080:8080 - e "keycloak.auth-server-url=http://localhost:8230/auth" - e "keycloak.realm=SIIB" - e "keycloak.resource=mic-cloture" - e "keycloak.secret=456162f1-e545-43aa-9b1b-484faf0e98b5" - e "KEYCLOAK_REALM=SIIB" - e "mic-acteur-api-host=localhost" - e "mic-acteur-api-port=3000" - e "SIIB_ENVIRONMENT=test" mic-cloture:latest

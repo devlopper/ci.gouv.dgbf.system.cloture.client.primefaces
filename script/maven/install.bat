@@ -1,14 +1,14 @@
 cd ../../..
-cd collectif-client-controller-entities/script/maven
+cd cloture-client-controller-entities/script/maven
 call install.bat
 
 cd ../../..
-cd collectif-client-controller-api/script/maven
+cd cloture-client-controller-api/script/maven
 call install.bat
 
 cd ../../..
-cd collectif-client-controller-impl/script/maven
+cd cloture-client-controller-impl/script/maven
 call install.bat
 
 cd ../../..
-cd collectif-client-deployment/script/maven
+cd cloture-client-deployment/script/maven
