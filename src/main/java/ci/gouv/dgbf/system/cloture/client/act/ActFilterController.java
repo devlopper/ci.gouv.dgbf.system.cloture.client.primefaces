@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.cloture.client.operation;
+package ci.gouv.dgbf.system.cloture.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

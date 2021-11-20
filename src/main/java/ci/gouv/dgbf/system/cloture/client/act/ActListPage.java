@@ -1,4 +1,4 @@
-package ci.gouv.dgbf.system.cloture.client.operation;
+package ci.gouv.dgbf.system.cloture.client.act;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -20,7 +21,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Col
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
@@ -29,6 +29,7 @@ import org.primefaces.model.SortOrder;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
+import ci.gouv.dgbf.system.cloture.server.client.rest.ActController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -54,7 +55,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(OperationFilterController.class,filterController);
+		DataTable dataTable = buildDataTable(ActFilterController.class,filterController);
 		//dataTable.setHeaderToolbarLeftCommands(null);
 		//dataTable.setRecordMenu(null);
 		//dataTable.setRecordCommands(null);
@@ -97,14 +98,14 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Vérouiller", "fa fa-lock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				System.out.println("ActListPage.buildDataTable(...).new AbstractImpl() {...}.__runExecuteFunction__() V");
+				DependencyInjection.inject(ActController.class).lock(List.of((Act)action.readArgument()));
 				return null; 
 			}
 		});
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				System.out.println("ActListPage.buildDataTable(...).new AbstractImpl() {...}.__runExecuteFunction__() D");
+				DependencyInjection.inject(ActController.class).unlock(List.of((Act)action.readArgument()));
 				return null;
 			}
 		});
