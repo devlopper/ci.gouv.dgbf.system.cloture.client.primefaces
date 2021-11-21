@@ -99,14 +99,14 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Vérouiller", "fa fa-lock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				DependencyInjection.inject(ActController.class).lock(List.of((Act)action.readArgument()));
+				DependencyInjection.inject(ActController.class).lock((Act)action.readArgument());
 				return null; 
 			}
 		});
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				DependencyInjection.inject(ActController.class).unlock(List.of((Act)action.readArgument()));
+				DependencyInjection.inject(ActController.class).unlock((Act)action.readArgument());
 				return null;
 			}
 		});
