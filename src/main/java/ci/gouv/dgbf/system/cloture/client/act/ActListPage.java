@@ -26,6 +26,7 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.cloture.server.api.persistence.ActOperationType;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
@@ -128,20 +129,32 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Act.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "40");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Act.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
 			}else if(Act.FIELD_OPERATION_TYPE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Opération");
-				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.FIELD_WIDTH, "130");
 			}else if(Act.FIELD_TRIGGER.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Déclencheur");
-				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Act.FIELD_OPERATION_DATE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exécutée le");
 				map.put(Column.FIELD_WIDTH, "120");
 			}
 			return map;
+		}
+		
+		@Override
+		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
+			if(record instanceof Act) {
+				Act act = (Act) record;
+				if(columnIndex != null && columnIndex == 0) {
+					if(ActOperationType.VERROUILLAGE.equals(act.getOperationType()))
+						return "cyk-background-highlight";
+				}
+			}
+			return super.getStyleClassByRecordByColumn(record, recordIndex, column, columnIndex);
 		}
 		
 		@Override
