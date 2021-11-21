@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
@@ -28,10 +30,12 @@ import lombok.experimental.Accessors;
 public class ActFilterController extends AbstractFilterController implements Serializable {
 
 	private SelectOneCombo operationTypeSelectOne;
+	private InputText codesInputText;
 	private InputText searchInputText;
 	
 	private ActOperationType operationTypeInitial;
-	private String searchInitial;
+	private String codesInitial;
+	private String searchInitial;	
 	
 	public ActFilterController() {
 		initialize();
@@ -42,13 +46,15 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		String operationTypeInitialString = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_OPERATION_TYPE_SELECT_ONE));
 		if(StringHelper.isNotBlank(operationTypeInitialString))
 			operationTypeInitial = ActOperationType.valueOf(operationTypeInitialString);
-		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));
+		codesInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_CODES_INPUT_TEXT));
+		searchInitial = WebController.getInstance().getRequestParameter(buildParameterName(FIELD_SEARCH_INPUT_TEXT));		
 		return this;
 	}
 	
 	@Override
 	protected void buildInputs() {
 		buildInputSelectOne(FIELD_OPERATION_TYPE_SELECT_ONE, ActOperationType.class);
+		buildInputText(FIELD_CODES_INPUT_TEXT);
 		buildInputText(FIELD_SEARCH_INPUT_TEXT);
 	}
 	
@@ -56,6 +62,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
 		if(FIELD_OPERATION_TYPE_SELECT_ONE.equals(fieldName))
 			return buildInputActOperationTypeSelectOne((ActOperationType) value);
+		if(FIELD_CODES_INPUT_TEXT.equals(fieldName))
+			return buildInputCodes((String)value);
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
 			return buildInputSearch((String)value);
 		return null;
@@ -75,6 +83,12 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		return input;
 	} 
 	
+	private InputText buildInputCodes(String codes) {
+		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,codes,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Numéro(s)");
+		//input.setPlaceholder("Numéro");
+		return input;
+	}
+	
 	private InputText buildInputSearch(String search) {
 		InputText input = InputText.build(SelectOneCombo.FIELD_VALUE,search,InputText.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,"Recherche");
 		input.setPlaceholder(StringHelper.concatenate(List.of("Numéro","Libellé"), " | "));
@@ -90,6 +104,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	
 	@Override
 	protected String getInputTextInitialValue(String fieldName) {
+		if(FIELD_CODES_INPUT_TEXT.equals(fieldName))
+			return codesInitial;
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
 			return searchInitial;
 		return super.getInputTextInitialValue(fieldName);
@@ -99,6 +115,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
 		if(FIELD_OPERATION_TYPE_SELECT_ONE.equals(fieldName) || input == operationTypeSelectOne)
 			return Parameters.ACT_OPERATION_TYPE;
+		if(FIELD_CODES_INPUT_TEXT.equals(fieldName) || input == codesInputText)
+			return Parameters.ACTS_CODES;
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || input == searchInputText)
 			return Parameters.SEARCH;
 		return super.buildParameterName(fieldName, input);
@@ -108,6 +126,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	protected String buildParameterName(String fieldName) {
 		if(FIELD_OPERATION_TYPE_SELECT_ONE.equals(fieldName))
 			return Parameters.ACT_OPERATION_TYPE;
+		if(FIELD_CODES_INPUT_TEXT.equals(fieldName))
+			return Parameters.ACTS_CODES;
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName))
 			return Parameters.SEARCH;
 		return super.buildParameterName(fieldName);
@@ -117,6 +137,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	protected String buildParameterName(AbstractInput<?> input) {
 		if(input == operationTypeSelectOne)
 			return Parameters.ACT_OPERATION_TYPE;
+		if(input == codesInputText)
+			return Parameters.ACTS_CODES;
 		if(input == searchInputText)
 			return Parameters.SEARCH;
 		return super.buildParameterName(input);
@@ -137,6 +159,11 @@ public class ActFilterController extends AbstractFilterController implements Ser
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,operationTypeSelectOne,Cell.FIELD_WIDTH,10));
 		}
 		
+		if(codesInputText != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,codesInputText.getOutputLabel(),Cell.FIELD_WIDTH,2));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,codesInputText,Cell.FIELD_WIDTH,10));
+		}
+		
 		if(searchInputText != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,10));
@@ -151,6 +178,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		strings.add(prefix);
 		if(operationTypeInitial != null)
 			strings.add(String.format("Opération : %s", operationTypeInitial.name()));
+		if(StringHelper.isNotBlank(codesInitial))
+			strings.add(String.format("Numéro(s) : %s", codesInitial));
 		return StringHelper.concatenate(strings, " | ");
 	}
 	
@@ -173,12 +202,25 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		return (String)AbstractInput.getValue(searchInputText);
 	}
 	
+	public String getCodes() {
+		return (String)AbstractInput.getValue(codesInputText);
+	}
+	
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ActFilterController controller,Boolean initial) {
 		ActOperationType operationType = Boolean.TRUE.equals(initial) ? controller.operationTypeInitial : controller.getOperationType();
 		if(operationType != null)
 			filter = Filter.Dto.addFieldIfValueNotNull(Parameters.ACT_OPERATION_TYPE,operationType.name() , filter);
+		String codesAsString = Boolean.TRUE.equals(initial) ? controller.codesInitial : controller.getCodes();
+		if(StringHelper.isNotBlank(codesAsString)) {
+			String[] codesArray = StringUtils.split(codesAsString, ",");
+			Collection<String> codes = CollectionHelper.listOf(Boolean.TRUE,codesArray);
+			if(CollectionHelper.isNotEmpty(codes))
+				codes = codes.stream().filter(code -> StringHelper.isNotBlank(code.trim())).map(code -> code.trim()).collect(Collectors.toList());
+			if(CollectionHelper.isNotEmpty(codes))
+				filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ACTS_CODES, codes, filter);
+		}		
 		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
 		return filter;
 	}
@@ -189,4 +231,5 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	
 	public static final String FIELD_OPERATION_TYPE_SELECT_ONE = "operationTypeSelectOne";
 	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
+	public static final String FIELD_CODES_INPUT_TEXT = "codesInputText";
 }
