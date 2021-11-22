@@ -1,0 +1,26 @@
+Publishing with time stamp : v0.0.0-202111220925 
+The push refers to repository [10.3.4.18:5000/mic-cloture]
+657419e84a0f: Preparing
+d7a8a9dde1d2: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+849cb74592b3: Mounted from mic-collectif
+f1b5933fe4b5: Mounted from mic-collectif
+13f0b213c32d: Mounted from mic-collectif
+657419e84a0f: Pushed
+d7a8a9dde1d2: Pushed
+v0.0.0-202111220925: digest: sha256:f7cab2bccd4828cb8fc1bed9827e68e12649a7f41259c9442965562cb185a63d size: 1375
+Publishing with time stamp : v0.0.0-202111220931 
+The push refers to repository [10.3.4.18:5000/mic-cloture]
+f7a89524db78: Preparing
+d7a8a9dde1d2: Preparing
+13f0b213c32d: Preparing
+849cb74592b3: Preparing
+f1b5933fe4b5: Preparing
+d7a8a9dde1d2: Layer already exists
+f1b5933fe4b5: Layer already exists
+13f0b213c32d: Layer already exists
+849cb74592b3: Layer already exists
+f7a89524db78: Pushed
+v0.0.0-202111220931: digest: sha256:58bcce3012f2d57e96b5ff76b2ef55f58d904c3c076f2cb31ed9934d59c3b6e3 size: 1376

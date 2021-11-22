@@ -2,6 +2,7 @@ package ci.gouv.dgbf.system.cloture.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -204,6 +205,16 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	
 	public String getCodes() {
 		return (String)AbstractInput.getValue(codesInputText);
+	}
+	
+	@Override
+	public Map<String, List<String>> asMap() {
+		Map<String, List<String>> map = new HashMap<>();
+		if(operationTypeInitial != null)
+			map.put(Parameters.ACT_OPERATION_TYPE, List.of(operationTypeInitial.name()));	
+		if(searchInitial != null && StringHelper.isNotBlank(searchInitial))
+			map.put(Parameters.SEARCH, List.of(searchInitial));
+		return map;
 	}
 	
 	/**/
