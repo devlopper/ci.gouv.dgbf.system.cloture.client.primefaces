@@ -54,9 +54,9 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	
 	@Override
 	protected void buildInputs() {
-		buildInputSelectOne(FIELD_OPERATION_TYPE_SELECT_ONE, ActOperationType.class);
+		//buildInputSelectOne(FIELD_OPERATION_TYPE_SELECT_ONE, ActOperationType.class);
 		buildInputText(FIELD_CODES_INPUT_TEXT);
-		buildInputText(FIELD_SEARCH_INPUT_TEXT);
+		//buildInputText(FIELD_SEARCH_INPUT_TEXT);
 	}
 	
 	@Override
@@ -188,10 +188,11 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.add(Act.FIELD_CODE);
 		columnsFieldsNames.add(Act.FIELD_NAME);
+		columnsFieldsNames.add(Act.FIELD_NUMBER_OF_LOCKS_ENABLED);
 		if(operationTypeInitial == null)
 			columnsFieldsNames.add(Act.FIELD_OPERATION_TYPE);
 		columnsFieldsNames.add(Act.FIELD_OPERATION_DATE_STRING);
-		columnsFieldsNames.add(Act.FIELD_TRIGGER);		
+		columnsFieldsNames.add(Act.FIELD_TRIGGER);
 		return columnsFieldsNames;
 	}
 	

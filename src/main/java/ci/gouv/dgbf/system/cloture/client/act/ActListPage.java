@@ -13,6 +13,7 @@ import javax.inject.Named;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
@@ -26,7 +27,6 @@ import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
-import ci.gouv.dgbf.system.cloture.server.api.persistence.ActOperationType;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
@@ -96,7 +96,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("20");
 		
-		
+		/*
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Vérouiller", "fa fa-lock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
@@ -104,6 +104,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 				return null; 
 			}
 		});
+		*/
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
@@ -133,6 +134,9 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Act.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
+			}else if(Act.FIELD_NUMBER_OF_LOCKS_ENABLED.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Nombre de verrous");
+				map.put(Column.FIELD_WIDTH, "150");
 			}else if(Act.FIELD_OPERATION_TYPE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Opération");
 				map.put(Column.FIELD_WIDTH, "130");
@@ -151,7 +155,9 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 			if(record instanceof Act) {
 				Act act = (Act) record;
 				if(columnIndex != null && columnIndex == 0) {
-					if(ActOperationType.VERROUILLAGE.equals(act.getOperationType()))
+					//if(ActOperationType.VERROUILLAGE.equals(act.getOperationType()))
+					//	return "cyk-background-highlight";
+					if(NumberHelper.isGreaterThanZero(act.getNumberOfLocksEnabled()))
 						return "cyk-background-highlight";
 				}
 			}
@@ -173,7 +179,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
 			return List.of(ActDto.JSON_IDENTIFIER,ActDto.JSON_CODE,ActDto.JSON_NAME,ActDto.JSON_OPERATION_TYPE
-					,ActDto.JSON_TRIGGER,ActDto.JSON_OPERATION_DATE_STRING);
+					,ActDto.JSON_TRIGGER,ActDto.JSON_OPERATION_DATE_STRING,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED);
 		}
 		
 		@Override
