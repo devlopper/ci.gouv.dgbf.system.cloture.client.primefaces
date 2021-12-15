@@ -146,6 +146,15 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 			}else if(Act.FIELD_OPERATION_DATE_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Exécutée le");
 				map.put(Column.FIELD_WIDTH, "120");
+			}else if(Act.FIELD_STATUS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Statut");
+				map.put(Column.FIELD_WIDTH, "150");
+			}else if(Act.FIELD_LATEST_OPERATION_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Dernière opération");
+				map.put(Column.FIELD_WIDTH, "300");
+			}else if(Act.FIELD_TYPE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Type");
+				map.put(Column.FIELD_WIDTH, "100");
 			}
 			return map;
 		}
@@ -178,8 +187,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(ActDto.JSON_IDENTIFIER,ActDto.JSON_CODE,ActDto.JSON_NAME,ActDto.JSON_OPERATION_TYPE
-					,ActDto.JSON_TRIGGER,ActDto.JSON_OPERATION_DATE_STRING,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED);
+			return List.of(ActDto.JSON_IDENTIFIER,ActDto.JSON_CODE,ActDto.JSON_NAME,ActDto.JSON_TYPE,ActDto.JSON_STATUS_STRING,ActDto.JSON_LATEST_OPERATION_STRING,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED);
 		}
 		
 		@Override
