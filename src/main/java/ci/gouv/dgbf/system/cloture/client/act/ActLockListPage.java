@@ -7,76 +7,63 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.value.ValueHelper;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.AbstractMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMenu;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
-import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
-import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
-import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
-import ci.gouv.dgbf.system.cloture.server.client.rest.ActController;
+import ci.gouv.dgbf.system.cloture.server.api.service.ActLockDto;
+import ci.gouv.dgbf.system.cloture.server.client.rest.ActLock;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Named @ViewScoped @Getter @Setter
-public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act> implements Serializable {
+public class ActLockListPage extends AbstractEntityListPageContainerManagedImpl<ActLock> implements Serializable {
 
-	private ActFilterController filterController;
-	@Inject private SpecificServiceGetter specificServiceGetter;
+	private ActLockFilterController filterController;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ActFilterController();   
+		filterController = new ActLockFilterController();   
 	}
 	
 	@Override
 	protected String __getWindowTitleValue__() { 
 		if(filterController == null)
 			return super.__getWindowTitleValue__(); 
-		return filterController.generateWindowTitleValue("Actes de dépenses");
+		return filterController.generateWindowTitleValue("Verrous actes de dépenses");
 	}
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(ActFilterController.class,filterController);
-		//dataTable.setHeaderToolbarLeftCommands(null);
-		//dataTable.setRecordMenu(null);
-		//dataTable.setRecordCommands(null);
-		//dataTable.setMenuColumn(null);
+		DataTable dataTable = buildDataTable(ActLockFilterController.class,filterController);
 		return dataTable;
 	}
 	
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null) 
 			arguments = new HashMap<>();
-		ActFilterController filterController = (ActFilterController) MapHelper.readByKey(arguments, ActFilterController.class);
+		ActLockFilterController filterController = (ActLockFilterController) MapHelper.readByKey(arguments, ActLockFilterController.class);
 		LazyDataModel lazyDataModel = (LazyDataModel) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL);
 		if(lazyDataModel == null)
 			arguments.put(DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL,lazyDataModel = new LazyDataModel());
 		if(lazyDataModel.getFilterController() == null)
 			lazyDataModel.setFilterController(filterController);
-		filterController = (ActFilterController) lazyDataModel.getFilterController();
+		filterController = (ActLockFilterController) lazyDataModel.getFilterController();
 		if(filterController == null)
-			lazyDataModel.setFilterController(filterController = new ActFilterController());		
+			lazyDataModel.setFilterController(filterController = new ActLockFilterController());		
 		filterController.build();
 		
 		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
@@ -88,7 +75,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTableListenerImpl.setFilterController(filterController);
 		
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_LAZY, Boolean.TRUE);
-		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, Act.class);
+		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_ELEMENT_CLASS, ActLock.class);
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_BUILDABLE, Boolean.FALSE);
 		
@@ -96,26 +83,6 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("20");
-		
-		/*
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Vérouiller", "fa fa-lock", new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				DependencyInjection.inject(ActController.class).lock((Act)action.readArgument());
-				return null; 
-			}
-		});
-		*/
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				DependencyInjection.inject(ActController.class).unlock((Act)action.readArgument());
-				return null;
-			}
-		});
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActActLocksListPage.OUTCOME, MenuItem.FIELD_VALUE,"Verrous",MenuItem.FIELD_ICON,"fa fa-eye");
-		dataTable.setEntityIdentifierParameterName(Parameters.ACT_IDENTIFIER);
-		
 		return dataTable;
 	}
 	
@@ -125,53 +92,37 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	
 	@Getter @Setter @Accessors(chain=true)
 	public static class DataTableListenerImpl extends DataTable.Listener.AbstractImpl implements Serializable {
-		private ActFilterController filterController;
+		private ActLockFilterController filterController;
 		
 		@Override
 		public Map<Object, Object> getColumnArguments(AbstractDataTable dataTable, String fieldName) {
 			Map<Object, Object> map = super.getColumnArguments(dataTable, fieldName);
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
-			if(Act.FIELD_CODE.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "110");
-			}else if(Act.FIELD_NAME.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
-			}else if(Act.FIELD_NUMBER_OF_LOCKS_ENABLED.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Nombre de verrous");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(Act.FIELD_OPERATION_TYPE.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Opération");
-				map.put(Column.FIELD_WIDTH, "130");
-			}else if(Act.FIELD_TRIGGER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Déclencheur");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(Act.FIELD_OPERATION_DATE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Exécutée le");
-				map.put(Column.FIELD_WIDTH, "120");
-			}else if(Act.FIELD_STATUS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Statut");
-				map.put(Column.FIELD_WIDTH, "500");
-			}else if(Act.FIELD_LATEST_OPERATION_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Dernière opération");
-				map.put(Column.FIELD_WIDTH, "300");
-			}else if(Act.FIELD_TYPE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Type");
-				map.put(Column.FIELD_WIDTH, "100");
-			}else if(Act.FIELD_LOCKED_REASONS.equals(fieldName)) {
+			if(ActLock.FIELD_REASON.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Motif");
-				map.put(Column.FIELD_WIDTH, "400");
+			}else if(ActLock.FIELD_ENABLED_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Actif");
+				map.put(Column.FIELD_WIDTH, "100");
+			}else if(ActLock.FIELD_BEGIN_DATE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Début");
+				map.put(Column.FIELD_WIDTH, "120");
+			}else if(ActLock.FIELD_END_DATE.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Fin");
+				map.put(Column.FIELD_WIDTH, "120");
+			}else if(ActLock.FIELD_LATEST_OPERATION.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Dernière opération");
 			}
 			return map;
 		}
 		
 		@Override
 		public String getStyleClassByRecordByColumn(Object record, Integer recordIndex, Column column,Integer columnIndex) {
-			if(record instanceof Act) {
-				Act act = (Act) record;
+			if(record instanceof ActLock) {
+				ActLock actLock = (ActLock) record;
 				if(columnIndex != null && columnIndex == 0) {
 					//if(ActOperationType.VERROUILLAGE.equals(act.getOperationType()))
 					//	return "cyk-background-highlight";
-					if(NumberHelper.isGreaterThanZero(act.getNumberOfLocksEnabled()))
+					if(Boolean.TRUE.equals(actLock.getEnabled()))
 						return "cyk-background-highlight";
 				}
 			}
@@ -185,19 +136,19 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	}
 	
 	@Getter @Setter @Accessors(chain=true)
-	public static class LazyDataModel extends org.cyk.utility.primefaces.collection.LazyDataModel<Act> implements Serializable {
+	public static class LazyDataModel extends org.cyk.utility.primefaces.collection.LazyDataModel<ActLock> implements Serializable {
 		
-		private ActFilterController filterController;
+		private ActLockFilterController filterController;
 		
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(ActDto.JSON_IDENTIFIER,ActDto.JSONS_CODE_NAME_TYPE_STRING_NUMBER_OF_LOCKS_ENABLED_STATUS_STRING_LATEST_OPERATION,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED,ActDto.JSON_LOCKED_REASONS);
+			return List.of(ActLockDto.JSON_IDENTIFIER,ActLockDto.JSONS_REASON_ENABLED_ENABLED_AS_STRING_BEGIN_DATE_STRING_END_DATE_STRING_LATEST_OPERATION);
 		}
 		
 		@Override
 		protected Filter.Dto getFilter(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return ActFilterController.instantiateFilter(filterController, Boolean.TRUE);
+			return ActLockFilterController.instantiateFilter(filterController, Boolean.TRUE);
 		}
 	}
 	

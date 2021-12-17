@@ -188,8 +188,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		columnsFieldsNames.add(Act.FIELD_CODE);
 		columnsFieldsNames.add(Act.FIELD_NAME);
-		columnsFieldsNames.add(Act.FIELD_TYPE);
-		columnsFieldsNames.add(Act.FIELD_STATUS_STRING);
+		columnsFieldsNames.add(Act.FIELD_TYPE_STRING);
+		columnsFieldsNames.add(Act.FIELD_STATUS_STRING); 
 		columnsFieldsNames.add(Act.FIELD_LATEST_OPERATION_STRING);
 		return columnsFieldsNames;
 	}

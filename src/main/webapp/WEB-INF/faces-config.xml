@@ -26,6 +26,12 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>actActLocksListView</from-outcome>
+			<to-view-id>/private/act/lock/actlocks.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>operationListView</from-outcome>
 			<to-view-id>/private/operation/list/index.jsf</to-view-id>
 			<redirect />

@@ -16,8 +16,8 @@ public class MenuBuilderMapInstantiatorImpl extends org.cyk.utility.client.contr
 		sessionMenuBuilder.addItems(
 				__inject__(MenuItemBuilder.class).setCommandableName("Cloture").setCommandableIcon(Icon.SUITCASE)
 				.addChild(
-						__inject__(MenuItemBuilder.class).setCommandableName("Opérations").setCommandableNavigationIdentifier("operationListView").setCommandableIcon(Icon.LIST)
-						,__inject__(MenuItemBuilder.class).setCommandableName("Actes").setCommandableNavigationIdentifier("actListView").setCommandableIcon(Icon.FILE)
+						/*__inject__(MenuItemBuilder.class).setCommandableName("Opérations").setCommandableNavigationIdentifier("operationListView").setCommandableIcon(Icon.LIST)
+						,*/__inject__(MenuItemBuilder.class).setCommandableName("Actes").setCommandableNavigationIdentifier("actListView").setCommandableIcon(Icon.FILE)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Finex").setCommandableNavigationIdentifier("activityCostUnitFundingEditAdjustmentsFinexView").setCommandableIcon(Icon.PENCIL)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Lignes").setCommandableNavigationIdentifier("activityCostUnitFundingListView").setCommandableIcon(Icon.LIST)
 						//,__inject__(MenuItemBuilder.class).setCommandableName("Incohérences").setCommandableNavigationIdentifier("activityCostUnitFundingDashboardListWhereAvailablePaymentCreditIsNotEnoughView").setCommandableIcon(Icon.EYE)
