@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.DependencyInjection;
@@ -31,6 +32,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
@@ -103,7 +105,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("20");
 		
-		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Déverouiller les actes suivants",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Déverouiller les actes filtrés",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
 			@Override
@@ -111,8 +113,8 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 				if(StringHelper.isBlank(((LazyDataModel)dataTable.getValue()).getFilterController().getCodes()))
 					throw new RuntimeException("Filtrer les actes à déverouiller");
 				Collection<String> codes = CollectionHelper.listOf(Boolean.TRUE, StringUtils.split(((LazyDataModel)dataTable.getValue()).getFilterController().getCodes(),","));
-				DependencyInjection.inject(ActController.class).unlockByIdentifiers(codes);
-				return null;
+				Response response = DependencyInjection.inject(ActController.class).unlockByIdentifiers(codes,Boolean.TRUE);
+				return ResponseHelper.getEntity(String.class, response);
 			}
 		});
 		
@@ -128,7 +130,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
-				DependencyInjection.inject(ActController.class).unlock((Act)action.readArgument());
+				DependencyInjection.inject(ActController.class).unlock(Boolean.FALSE,(Act)action.readArgument());
 				return null;
 			}
 		});
