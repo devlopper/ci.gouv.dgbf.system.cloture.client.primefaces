@@ -175,7 +175,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 			}else if(Act.FIELD_LATEST_OPERATION_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Dernière opération");
 				map.put(Column.FIELD_WIDTH, "300");
-			}else if(Act.FIELD_TYPE_STRING.equals(fieldName)) {
+			}else if(Act.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
 				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Act.FIELD_LOCKED_REASONS.equals(fieldName)) {
