@@ -28,8 +28,8 @@ public class ActActLocksListPage extends AbstractPageContainerManagedImpl implem
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		Controller.GetArguments arguments = new Controller.GetArguments();
-		arguments.projections(ActDto.JSON_IDENTIFIER,ActDto.JSONS_CODE_NAME_TYPE_STRING_NUMBER_OF_LOCKS_ENABLED_STATUS_STRING_LATEST_OPERATION,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED
-				,ActDto.JSON_LOCKED_REASONS);
+		//arguments.projections(ActDto.JSON_IDENTIFIER,ActDto.JSONS_CODE_NAME_TYPE_STRING_NUMBER_OF_LOCKS_ENABLED_STATUS_STRING_LATEST_OPERATION,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED
+		//		,ActDto.JSON_LOCKED_REASONS);
 		readController = new ActReadController();
 		readController.setAct(__inject__(ActController.class).getByIdentifier(WebController.getInstance().getRequestParameter(ParameterName.ENTITY_IDENTIFIER),arguments));
 		readController.setLocksDataTable(ActLockListPage.buildDataTable(ActLockFilterController.class,new ActLockFilterController().setActInitial(readController.getAct())));

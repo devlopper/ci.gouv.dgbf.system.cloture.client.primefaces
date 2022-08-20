@@ -154,30 +154,18 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Act.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "110");
+				map.put(Column.FIELD_WIDTH, "130");
 			}else if(Act.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
 			}else if(Act.FIELD_NUMBER_OF_LOCKS_ENABLED.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Nombre de verrous");
 				map.put(Column.FIELD_WIDTH, "150");
-			}else if(Act.FIELD_OPERATION_TYPE.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Opération");
-				map.put(Column.FIELD_WIDTH, "130");
-			}else if(Act.FIELD_TRIGGER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Déclencheur");
-				map.put(Column.FIELD_WIDTH, "150");
-			}else if(Act.FIELD_OPERATION_DATE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Exécutée le");
-				map.put(Column.FIELD_WIDTH, "120");
-			}else if(Act.FIELD_STATUS_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Statut");
-				map.put(Column.FIELD_WIDTH, "500");
-			}else if(Act.FIELD_LATEST_OPERATION_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Dernière opération");
-				map.put(Column.FIELD_WIDTH, "300");
 			}else if(Act.FIELD_TYPE_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Type");
-				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_WIDTH, "150");
+			}else if(Act.FIELD_LOCKED_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Verrouillé");
+				map.put(Column.FIELD_WIDTH, "80");
 			}else if(Act.FIELD_LOCKED_REASONS.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Motif");
 				map.put(Column.FIELD_WIDTH, "400");
@@ -213,7 +201,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(ActDto.JSON_IDENTIFIER,ActDto.JSONS_CODE_NAME_TYPE_STRING_NUMBER_OF_LOCKS_ENABLED_STATUS_STRING_LATEST_OPERATION,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED,ActDto.JSON_LOCKED_REASONS);
+			return List.of(ActDto.JSON_IDENTIFIER,ActDto.JSONS_CODE_NAME_TYPE_AS_STRING,ActDto.JSON_NUMBER_OF_LOCKS_ENABLED,ActDto.JSON_LOCKED_REASONS);
 		}
 		
 		@Override

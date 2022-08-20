@@ -38,8 +38,8 @@ public class ActReadController extends AbstractReadController implements Seriali
 		addLabelValue(cellsMaps, "Référence", act.getCode());
 		addLabelValue(cellsMaps, "Libelle", act.getName());
 		addLabelValue(cellsMaps, "Type", act.getTypeAsString());
-		addLabelValue(cellsMaps, "Statut", act.getStatusString());
-		addLabelValue(cellsMaps, "Dernière opération", act.getLatestOperationString());
+		//addLabelValue(cellsMaps, "Statut", act.getStatusString());
+		//addLabelValue(cellsMaps, "Dernière opération", act.getLatestOperationString());
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 	

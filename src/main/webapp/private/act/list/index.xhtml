@@ -13,7 +13,7 @@
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(actListPage.dataTable)}">
     			<ui:param name="dataTable" value="#{actListPage.dataTable}"/>
     			<ui:define name="columnsAfterRowIndexBodies3">
-    				<h:outputText value="#{record.statusString}" />
+    				<h:outputText value="#{record.lockedAsString}" />
     				<ui:fragment rendered="#{not empty record.lockedReasons}">
     					<br/>
     					<ui:repeat value="#{record.lockedReasons}" var="reason">

@@ -189,8 +189,7 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		columnsFieldsNames.add(Act.FIELD_CODE);
 		columnsFieldsNames.add(Act.FIELD_NAME);
 		columnsFieldsNames.add(Act.FIELD_TYPE_AS_STRING);
-		columnsFieldsNames.add(Act.FIELD_STATUS_STRING); 
-		columnsFieldsNames.add(Act.FIELD_LATEST_OPERATION_STRING);
+		columnsFieldsNames.add(Act.FIELD_LOCKED_AS_STRING); 
 		return columnsFieldsNames;
 	}
 	
