@@ -14,19 +14,17 @@ import org.cyk.utility.__kernel__.user.interface_.message.Severity;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
-import org.cyk.utility.service.client.Controller.GetArguments;
 
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
-import ci.gouv.dgbf.system.cloture.server.api.service.OperationDto;
-import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
 import ci.gouv.dgbf.system.cloture.server.client.rest.OperationController;
+import ci.gouv.dgbf.system.cloture.server.client.rest.Script;
 import lombok.Getter;
 import lombok.Setter;
 
 @Named @ViewScoped @Getter @Setter
 public class OperationExecutePage extends AbstractPageContainerManagedImpl implements Serializable {
 
-	private Operation operation;
+	private Script operation;
 	@Inject private OperationController controller;
 	
 	@Override
@@ -34,9 +32,9 @@ public class OperationExecutePage extends AbstractPageContainerManagedImpl imple
 		super.__listenPostConstruct__();
 		String identifier = WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER);
 		if(StringHelper.isNotBlank(identifier)) {
-			operation = controller.getByIdentifier(identifier, new GetArguments().projections(OperationDto.JSON_IDENTIFIER,OperationDto.JSON_CODE
-					,OperationDto.JSON_NAME,OperationDto.JSON_EXECUTION_BEGIN_DATE_STRING,OperationDto.JSON_EXECUTION_END_DATE_STRING,OperationDto.JSON_EXECUTION_STATUS
-					,OperationDto.JSON_PROCEDURE_NAME,OperationDto.JSON_START_DATE_STRING,OperationDto.JSON_TRIGGER));
+			/*operation = controller.getByIdentifier(identifier, new GetArguments().projections(ScriptDto.JSON_IDENTIFIER,ScriptDto.JSON_CODE
+					,ScriptDto.JSON_NAME,ScriptDto.JSON_EXECUTION_BEGIN_DATE_STRING,ScriptDto.JSON_EXECUTION_END_DATE_STRING,ScriptDto.JSON_EXECUTION_STATUS
+					,ScriptDto.JSON_PROCEDURE_NAME,ScriptDto.JSON_START_DATE_STRING,ScriptDto.JSON_TRIGGER));*/
 			// ResponseHelper.getEntityFromJson(Operation.class, response);
 		}	
 	}

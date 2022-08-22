@@ -48,7 +48,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 	protected String __getWindowTitleValue__() { 
 		if(filterController == null)
 			return super.__getWindowTitleValue__(); 
-		return filterController.generateWindowTitleValue("Opérations de clôture");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.cloture.server.api.persistence.Operation.NAME);
 	}
 	
 	@Override
@@ -113,24 +113,15 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 			map.put(Column.ConfiguratorImpl.FIELD_EDITABLE, Boolean.FALSE);
 			if(Operation.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
-				map.put(Column.FIELD_WIDTH, "40");
+				map.put(Column.FIELD_WIDTH, "100");
 			}else if(Operation.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
-			}else if(Operation.FIELD_START_DATE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Exécutable à partir du");
+			}else if(Operation.FIELD_TYPE_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Type");
 				map.put(Column.FIELD_WIDTH, "120");
-			}else if(Operation.FIELD_EXECUTION_BEGIN_DATE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Exécution démarrée le");
-				map.put(Column.FIELD_WIDTH, "120");
-			}else if(Operation.FIELD_EXECUTION_END_DATE_STRING.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Exécution terminée le");
-				map.put(Column.FIELD_WIDTH, "120");
-			}else if(Operation.FIELD_TRIGGER.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Déclencheur");
-				map.put(Column.FIELD_WIDTH, "100");
-			}else if(Operation.FIELD_EXECUTION_STATUS.equals(fieldName)) {
-				map.put(Column.FIELD_HEADER_TEXT, "Status");
-				map.put(Column.FIELD_WIDTH, "100");
+			}else if(Operation.FIELD_REASON.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Motif");
+				map.put(Column.FIELD_WIDTH, "400");
 			}
 			return map;
 		}
@@ -149,9 +140,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(OperationDto.JSON_IDENTIFIER,OperationDto.JSON_CODE,OperationDto.JSON_NAME,OperationDto.JSON_START_DATE_STRING
-					,OperationDto.JSON_EXECUTION_BEGIN_DATE_STRING,OperationDto.JSON_EXECUTION_END_DATE_STRING,OperationDto.JSON_TRIGGER
-					,OperationDto.JSON_EXECUTION_STATUS);
+			return List.of(OperationDto.JSON_IDENTIFIER,OperationDto.JSON_CODE,OperationDto.JSON_NAME,OperationDto.JSON_TYPE_AS_STRING,OperationDto.JSON_REASON);
 		}
 		
 		@Override
