@@ -12,6 +12,7 @@ import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
@@ -93,7 +94,12 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("20");
 		
-		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,OperationExecutePage.OUTCOME, MenuItem.FIELD_VALUE,"Exécuter",MenuItem.FIELD_ICON,"fa fa-gear");
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,OperationCreatePage.OUTCOME
+				, MenuItem.FIELD_VALUE,"Créer",MenuItem.FIELD_ICON,"fa fa-plus",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);
+		
+		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,OperationReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
+		//dataTable.addRecordMenuItemByArgumentsNavigateToView(null,OperationExecutePage.OUTCOME, MenuItem.FIELD_VALUE,"Exécuter",MenuItem.FIELD_ICON,"fa fa-gear");
+		
 		dataTable.setEntityIdentifierParameterName(Parameters.OPERATION_IDENTIFIER);
 		
 		return dataTable;

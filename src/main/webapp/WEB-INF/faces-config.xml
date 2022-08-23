@@ -38,6 +38,18 @@
 		</navigation-case>
 		
 		<navigation-case>
+			<from-outcome>operationCreateView</from-outcome>
+			<to-view-id>/private/operation/create/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
+			<from-outcome>operationReadView</from-outcome>
+			<to-view-id>/private/operation/read/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>operationExecuteView</from-outcome>
 			<to-view-id>/private/operation/execute/index.jsf</to-view-id>
 			<redirect />

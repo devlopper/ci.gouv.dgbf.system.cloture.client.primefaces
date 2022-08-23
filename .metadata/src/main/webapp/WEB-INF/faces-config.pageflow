@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pageflow:Pageflow xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:pageflow="http://www.sybase.com/suade/pageflow" id="pf16370776028600" configfile="/cloture-client-primefaces/src/main/webapp/WEB-INF/faces-config.xml">
-  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="946" id="pf16372463792521" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16372463792522 pf16372641982404 pf16397350977240 pf16397350977241 pf16397350977242 pf16397352024877" path="*"/>
-  <nodes xsi:type="pageflow:PFPage" name="private/operation/list/index.jsf" x="338" y="178" id="pf16372463792523" referenceLink="//@navigationRule.0/@navigationCase.3/@toViewId|" inlinks="pf16372463792522" path="/private/operation/list/index.jsf"/>
-  <nodes xsi:type="pageflow:PFPage" name="private/operation/execute/index.jsf" x="338" y="562" id="pf16372641982405" referenceLink="//@navigationRule.0/@navigationCase.4/@toViewId|" inlinks="pf16372641982404" path="/private/operation/execute/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="*" x="122" y="946" id="pf16372463792521" referenceLink="//@navigationRule.0/@fromViewId|" outlinks="pf16372463792522 pf16372641982404 pf16397350977240 pf16397350977241 pf16397350977242 pf16397352024877 pf16611779409700" path="*"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/operation/list/index.jsf" x="338" y="178" id="pf16372463792523" referenceLink="//@navigationRule.0/@navigationCase.4/@toViewId|" inlinks="pf16372463792522" path="/private/operation/list/index.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/operation/execute/index.jsf" x="338" y="562" id="pf16372641982405" referenceLink="//@navigationRule.0/@navigationCase.6/@toViewId|" inlinks="pf16372641982404" path="/private/operation/execute/index.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/act/list/index.jsf" x="338" y="946" id="pf16397350977244" referenceLink="//@navigationRule.0/@navigationCase.0/@toViewId|" inlinks="pf16397350977240" path="/private/act/list/index.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/act/operate/lock.jsf" x="338" y="1330" id="pf16397350977245" referenceLink="//@navigationRule.0/@navigationCase.1/@toViewId|" inlinks="pf16397350977241" path="/private/act/operate/lock.jsf"/>
-  <nodes xsi:type="pageflow:PFPage" name="private/act/operate/unlock.jsf" x="338" y="1714" id="pf16397350977246" referenceLink="//@navigationRule.0/@navigationCase.3/@toViewId|" inlinks="pf16397350977242" path="/private/act/operate/unlock.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/act/operate/unlock.jsf" x="338" y="1714" id="pf16397350977246" referenceLink="//@navigationRule.0/@navigationCase.2/@toViewId|" inlinks="pf16397350977242" path="/private/act/operate/unlock.jsf"/>
   <nodes xsi:type="pageflow:PFPage" name="private/act/lock/actlocks.jsf" id="pf16397352024878" referenceLink="//@navigationRule.0/@navigationCase.3/@toViewId|" inlinks="pf16397352024877" path="/private/act/lock/actlocks.jsf"/>
+  <nodes xsi:type="pageflow:PFPage" name="private/operation/create/index.jsf" id="pf16611779409701" referenceLink="//@navigationRule.0/@navigationCase.5/@toViewId|" inlinks="pf16611779409700" path="/private/operation/create/index.jsf"/>
   <links id="pf16372463792522" target="pf16372463792523" source="pf16372463792521" outcome="operationListView" redirect="true"/>
   <links id="pf16372641982404" target="pf16372641982405" source="pf16372463792521" outcome="operationExecuteView" redirect="true"/>
   <links id="pf16397350977240" target="pf16397350977244" source="pf16372463792521" outcome="actListView" redirect="true"/>
   <links id="pf16397350977241" target="pf16397350977245" source="pf16372463792521" outcome="actLockView" redirect="true"/>
   <links id="pf16397350977242" target="pf16397350977246" source="pf16372463792521" outcome="actUnLockView" redirect="true"/>
   <links id="pf16397352024877" target="pf16397352024878" source="pf16372463792521" outcome="actActLocksListView" redirect="true"/>
+  <links id="pf16611779409700" target="pf16611779409701" source="pf16372463792521" outcome="operationCreateView" redirect="true"/>
 </pageflow:Pageflow>
