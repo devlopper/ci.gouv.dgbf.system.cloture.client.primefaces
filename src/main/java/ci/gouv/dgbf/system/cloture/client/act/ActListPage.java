@@ -60,7 +60,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	protected String __getWindowTitleValue__() { 
 		if(filterController == null)
 			return super.__getWindowTitleValue__(); 
-		return filterController.generateWindowTitleValue("Actes de dépenses");
+		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.cloture.server.api.persistence.Act.NAME_PLURAL);
 	}
 	
 	@Override
@@ -104,7 +104,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("20");
-		
+		/*
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Déverouiller les actes filtrés",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
@@ -117,7 +117,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 				return ResponseHelper.getEntity(String.class, response);
 			}
 		});
-		
+		*/
 		/*
 		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Vérouiller", "fa fa-lock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
@@ -127,14 +127,14 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 			}
 		});
 		*/
-		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
+		/*dataTable.addRecordMenuItemByArgumentsExecuteFunction("Dévérouiller", "fa fa-unlock", new AbstractAction.Listener.AbstractImpl() {
 			@Override
 			protected Object __runExecuteFunction__(AbstractAction action) {
 				DependencyInjection.inject(ActController.class).unlock(Boolean.FALSE,(Act)action.readArgument());
 				return null;
 			}
-		});
-		dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActActLocksListPage.OUTCOME, MenuItem.FIELD_VALUE,"Verrous",MenuItem.FIELD_ICON,"fa fa-eye");
+		});*/
+		//dataTable.addRecordMenuItemByArgumentsOpenViewInDialog(ActActLocksListPage.OUTCOME, MenuItem.FIELD_VALUE,"Verrous",MenuItem.FIELD_ICON,"fa fa-eye");
 		dataTable.setEntityIdentifierParameterName(Parameters.ACT_IDENTIFIER);
 		
 		return dataTable;

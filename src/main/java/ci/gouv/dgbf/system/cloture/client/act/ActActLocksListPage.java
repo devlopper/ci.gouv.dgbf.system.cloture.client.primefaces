@@ -11,7 +11,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContaine
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.service.client.Controller;
 
-import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
 import ci.gouv.dgbf.system.cloture.server.client.rest.ActController;
 import lombok.Getter;

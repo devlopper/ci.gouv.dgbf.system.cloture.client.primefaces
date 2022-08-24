@@ -146,7 +146,7 @@ public class OperationFilterController extends AbstractFilterController implemen
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,OperationFilterController controller,Boolean initial) {
-		//filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.OPERATION_TYPE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType()), filter);
+		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.OPERATION_TYPE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.typeInitial : controller.getType()), filter);
 		return filter;
 	}
 	
