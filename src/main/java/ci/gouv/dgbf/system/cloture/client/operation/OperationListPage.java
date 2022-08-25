@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.array.ArrayHelper;
@@ -23,7 +22,6 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
@@ -37,7 +35,7 @@ import lombok.experimental.Accessors;
 public class OperationListPage extends AbstractEntityListPageContainerManagedImpl<Operation> implements Serializable {
 
 	private OperationFilterController filterController;
-	@Inject private SpecificServiceGetter specificServiceGetter;
+	//@Inject private SpecificServiceGetter specificServiceGetter;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
@@ -92,7 +90,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
-		dataTable.getOrderNumberColumn().setWidth("20");
+		dataTable.getOrderNumberColumn().setWidth("40");
 		
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,OperationCreatePage.OUTCOME
 				, MenuItem.FIELD_VALUE,"Créer",MenuItem.FIELD_ICON,"fa fa-plus",MenuItem.FIELD_USER_INTERFACE_ACTION, UserInterfaceAction.NAVIGATE_TO_VIEW);

@@ -1,28 +1,23 @@
 package ci.gouv.dgbf.system.cloture.client.act;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
-import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
-import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
-import org.cyk.utility.__kernel__.collection.CollectionHelper;
+import org.cyk.utility.__kernel__.identifier.resource.ParameterName;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.number.NumberHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
-import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.__kernel__.value.ValueHelper;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
+import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -32,15 +27,12 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.rest.ResponseHelper;
-import org.cyk.utility.service.client.SpecificServiceGetter;
 import org.primefaces.model.SortOrder;
 
+import ci.gouv.dgbf.system.cloture.client.act.ActFilterController.UsedFor;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
-import ci.gouv.dgbf.system.cloture.server.client.rest.ActController;
-import ci.gouv.dgbf.system.cloture.server.client.rest.OperationController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -49,12 +41,14 @@ import lombok.experimental.Accessors;
 public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act> implements Serializable {
 
 	private ActFilterController filterController;
-	@Inject private SpecificServiceGetter specificServiceGetter;
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
 		super.__listenBeforePostConstruct__();
-		filterController = new ActFilterController();   
+		filterController = new ActFilterController();
+		String usedForName = WebController.getInstance().getRequestParameter(ParameterName.stringify(UsedFor.class));
+		if(StringHelper.isNotBlank(usedForName))
+			filterController.setUsedFor(UsedFor.valueOf(usedForName));
 	}
 	
 	@Override
@@ -66,7 +60,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	
 	@Override
 	protected DataTable __buildDataTable__() {
-		DataTable dataTable = buildDataTable(ActFilterController.class,filterController);
+		DataTable dataTable = buildDataTable(ActFilterController.class,filterController,ActListPage.class,this);
 		//dataTable.setHeaderToolbarLeftCommands(null);
 		//dataTable.setRecordMenu(null);
 		//dataTable.setRecordCommands(null);
@@ -77,6 +71,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	public static DataTable buildDataTable(Map<Object,Object> arguments) {
 		if(arguments == null) 
 			arguments = new HashMap<>();
+		AbstractPageContainerManagedImpl page = (AbstractPageContainerManagedImpl) MapHelper.readByKey(arguments, ActListPage.class);
 		ActFilterController filterController = (ActFilterController) MapHelper.readByKey(arguments, ActFilterController.class);
 		LazyDataModel lazyDataModel = (LazyDataModel) MapHelper.readByKey(arguments, DataTable.ConfiguratorImpl.FIELD_LAZY_DATA_MODEL);
 		if(lazyDataModel == null)
@@ -86,6 +81,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		filterController = (ActFilterController) lazyDataModel.getFilterController();
 		if(filterController == null)
 			lazyDataModel.setFilterController(filterController = new ActFilterController());		
+		filterController.setPage(page);
 		filterController.build();
 		
 		String outcome = ValueHelper.defaultToIfBlank((String)MapHelper.readByKey(arguments,OUTCOME),OUTCOME);
@@ -101,10 +97,26 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_COLUMNS_FIELDS_NAMES, filterController.generateColumnsNames());
 		MapHelper.writeByKeyDoNotOverride(arguments, DataTable.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_BUILDABLE, Boolean.FALSE);
 		
+		if(ActFilterController.UsedFor.ADD_TO_OPERATION.equals(filterController.getUsedFor()) || ActFilterController.UsedFor.REMOVE_FROM_OPERATION.equals(filterController.getUsedFor())) {
+			MapHelper.writeByKeyDoNotOverride(arguments, DataTable.FIELD_SELECTION_MODE, "multiple");
+		}
+		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("50");
+		
+		filterController.setDataTable(dataTable);
+		
+		if(filterController.getOperationInitial() != null && page != null && !Boolean.TRUE.equals(page.getIsRenderTypeDialog())) {
+			Map<String, List<String>> parameters = filterController.asMap();
+			UserInterfaceAction addOrRemoveActCommandUserInterfaceAction = (UserInterfaceAction) MapHelper.readByKey(arguments, ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION);
+			addHeaderAddOrRemoveActCommand(dataTable, Boolean.TRUE, parameters,addOrRemoveActCommandUserInterfaceAction);
+			addHeaderAddOrRemoveActCommand(dataTable, Boolean.FALSE, parameters,addOrRemoveActCommandUserInterfaceAction);
+			//dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,OUTCOME,MenuItem.FIELD___PARAMETERS__,parameters
+			//		, MenuItem.FIELD_VALUE,"Ajouter",MenuItem.FIELD_ICON,"fa fa-plus",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG);
+		}
+		
 		/*
 		addHeaderAddOrRemoveActCommand(dataTable, Boolean.TRUE);
 		addHeaderAddOrRemoveActCommand(dataTable, Boolean.FALSE);
@@ -145,7 +157,14 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		return dataTable;
 	}
 	
-	public static void addHeaderAddOrRemoveActCommand(DataTable dataTable,Boolean add) {
+	public static void addHeaderAddOrRemoveActCommand(DataTable dataTable,Boolean add,Map<String, List<String>> parameters,UserInterfaceAction userInterfaceAction) {
+		Map<String, List<String>> lParameters = parameters == null ? new HashMap<>() : new HashMap<>(parameters);
+		lParameters.put(Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION, List.of((add ? Boolean.FALSE : Boolean.TRUE).toString()));
+		lParameters.put(ParameterName.stringify(UsedFor.class), List.of(add ? UsedFor.ADD_TO_OPERATION.name() : UsedFor.REMOVE_FROM_OPERATION.name()));
+		String label = (Boolean.TRUE.equals(add) ? "Ajouter" : "Retirer");
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,OUTCOME,MenuItem.FIELD___PARAMETERS__,lParameters
+				, MenuItem.FIELD_VALUE,label,MenuItem.FIELD_ICON,"fa fa-"+(Boolean.TRUE.equals(add) ? "plus" : "minus"),MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(userInterfaceAction,UserInterfaceAction.OPEN_VIEW_IN_DIALOG));
+		/*
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,(Boolean.TRUE.equals(add) ? "Ajouter" : "Retirer")+" les actes filtrés",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
 				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
@@ -159,6 +178,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 				return ResponseHelper.getEntity(String.class, response);
 			}
 		});
+		*/
 	}
 	
 	public static DataTable buildDataTable(Object...objects) {
@@ -232,4 +252,5 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	}
 	
 	public static final String OUTCOME = "actListView";
+	public static final String ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION = "addOrRemoveActCommandUserInterfaceAction";
 }

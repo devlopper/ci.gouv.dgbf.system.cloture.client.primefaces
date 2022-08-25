@@ -9,8 +9,11 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
@@ -18,6 +21,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu.Tab;
 import org.cyk.utility.service.client.Controller;
 
+import ci.gouv.dgbf.system.cloture.client.act.ActFilterController;
+import ci.gouv.dgbf.system.cloture.client.act.ActListPage;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.OperationDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
@@ -67,7 +72,14 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 	private void buildTabSummary(Collection<Map<Object,Object>> cellsMaps) {
 		OperationReadController readController = new OperationReadController(operation);
 		readController.initialize();
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,readController.getLayout()));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,readController.getLayout(),Cell.FIELD_WIDTH,12));
+		
+		ActFilterController filterController = new ActFilterController();
+		filterController.setOperationInitial(operation);
+		filterController.setAddedToSelectedOperationInitial(Boolean.TRUE);
+		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
+		DataTable actsDataTable = ActListPage.buildDataTable(ActFilterController.class,filterController,ActListPage.class,this,ActListPage.ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW);
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actsDataTable,Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildTabActs(Collection<Map<Object,Object>> cellsMaps) {
