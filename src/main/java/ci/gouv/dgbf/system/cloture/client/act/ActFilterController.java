@@ -2,25 +2,37 @@ package ci.gouv.dgbf.system.cloture.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.lang3.StringUtils;
+import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
+import org.cyk.utility.__kernel__.user.interface_.message.RenderType;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 import org.cyk.utility.service.client.SpecificController;
 
+import ci.gouv.dgbf.system.cloture.client.act.ActListPage.LazyDataModel;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.ActTypeDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
@@ -45,6 +57,8 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	private String searchInitial;
 	private Boolean addedToSelectedOperationInitial;
 	
+	private CommandButton addToOperationCommandButton,removeFromOperationCommandButton;
+	
 	public ActFilterController(Boolean initializable) {
 		if(Boolean.TRUE.equals(initializable))
 			initialize();
@@ -57,13 +71,14 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	
 	@Override
 	public AbstractFilterController initialize() {
-		if(typeInitial == null)
-			typeInitial = __inject__(ActTypeController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.ACT_TYPE_IDENTIFIER)
-				,new Controller.GetArguments().projections(ActTypeDto.JSON_IDENTIFIER,ActTypeDto.JSON_NAME));
-		if(operationInitial == null)
-			if(StringHelper.isNotBlank(WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER)))
-				operationInitial = __inject__(OperationController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER)
-					,new Controller.GetArguments().projections(ActTypeDto.JSON_IDENTIFIER,ActTypeDto.JSON_NAME));
+		//if(typeInitial == null)
+		//	typeInitial = __inject__(ActTypeController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.ACT_TYPE_IDENTIFIER)
+		//		,new Controller.GetArguments().projections(ActTypeDto.JSON_IDENTIFIER,ActTypeDto.JSON_NAME));
+		
+		//if(operationInitial == null)
+		//	if(StringHelper.isNotBlank(WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER)))
+		//		operationInitial = __inject__(OperationController.class).getByIdentifier(WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER)
+		//			,new Controller.GetArguments().projections(ActTypeDto.JSON_IDENTIFIER,ActTypeDto.JSON_NAME));
 			/*
 			operationInitial = __inject__(OperationController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER)
 				,new Controller.GetArguments().projections(ActTypeDto.JSON_IDENTIFIER,ActTypeDto.JSON_NAME));
@@ -78,6 +93,7 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		super.__addInputsByBasedOnFieldsNames__();
 		addInputSelectOneByBaseFieldName("type");
 		addInputSelectOneByBaseFieldName("operation");
+		addInputSelectOneByBaseFieldName("addedToSelectedOperation");
 		addInputTextByBaseFieldName("codes");
 		addInputTextByBaseFieldName("search");
 	}
@@ -205,8 +221,30 @@ public class ActFilterController extends AbstractFilterController implements Ser
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,11));
 		}
 		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,12));	
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.TRUE, Boolean.TRUE),Cell.FIELD_WIDTH,4));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.FALSE, Boolean.TRUE),Cell.FIELD_WIDTH,4));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,4));
 		return cellsMaps;
+	}
+	
+	@Override
+	protected void buildFilterCommandButton() {
+		super.buildFilterCommandButton();
+		filterCommandButton.addStyleClasses("cyk-float-right");
+	}
+	
+	public static CommandButton buildAddToOrRemoveFromOperationCommandButton(ActFilterController filterController,Boolean add,Boolean existingIgnorable) {
+		return CommandButton.build(CommandButton.FIELD_VALUE,(Boolean.TRUE.equals(add) ? "Ajouter" : "Retirer")+" les actes filtrés",CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+				,List.of(org.cyk.utility.__kernel__.user.interface_.message.RenderType.GROWL),CommandButton.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				Filter.Dto filter = ActFilterController.instantiateFilter(filterController, Boolean.FALSE);
+				OperationController controller = DependencyInjection.inject(OperationController.class);
+				Response response = Boolean.TRUE.equals(add) ? controller.addActByFilter(filterController.getOperation(), filter, existingIgnorable) : controller.removeActByFilter(filterController.getOperation(), filter, existingIgnorable);
+				return ResponseHelper.getEntity(String.class, response);
+			}
+		},CommandButton.FIELD_STYLE_CLASS,"cyk-float-right");
 	}
 	
 	public String generateWindowTitleValue(String prefix) {

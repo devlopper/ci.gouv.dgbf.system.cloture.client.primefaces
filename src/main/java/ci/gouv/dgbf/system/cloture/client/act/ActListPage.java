@@ -40,6 +40,7 @@ import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.ActDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Act;
 import ci.gouv.dgbf.system.cloture.server.client.rest.ActController;
+import ci.gouv.dgbf.system.cloture.server.client.rest.OperationController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -103,7 +104,11 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
-		dataTable.getOrderNumberColumn().setWidth("20");
+		dataTable.getOrderNumberColumn().setWidth("50");
+		/*
+		addHeaderAddOrRemoveActCommand(dataTable, Boolean.TRUE);
+		addHeaderAddOrRemoveActCommand(dataTable, Boolean.FALSE);
+		*/
 		/*
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,"Déverouiller les actes filtrés",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -138,6 +143,22 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.setEntityIdentifierParameterName(Parameters.ACT_IDENTIFIER);
 		
 		return dataTable;
+	}
+	
+	public static void addHeaderAddOrRemoveActCommand(DataTable dataTable,Boolean add) {
+		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,(Boolean.TRUE.equals(add) ? "Ajouter" : "Retirer")+" les actes filtrés",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
+				,List.of(RenderType.GROWL),MenuItem.FIELD_LISTENER,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				ActFilterController filterController = ((LazyDataModel)dataTable.getValue()).getFilterController();
+				Filter.Dto filter = ActFilterController.instantiateFilter(filterController, Boolean.FALSE);
+				OperationController controller = DependencyInjection.inject(OperationController.class);
+				Boolean existingIgnorable = Boolean.TRUE;
+				Response response = Boolean.TRUE.equals(add) ? controller.addActByFilter(filterController.getOperation(), filter, existingIgnorable) : controller.removeActByFilter(filterController.getOperation(), filter, existingIgnorable);
+				return ResponseHelper.getEntity(String.class, response);
+			}
+		});
 	}
 	
 	public static DataTable buildDataTable(Object...objects) {
