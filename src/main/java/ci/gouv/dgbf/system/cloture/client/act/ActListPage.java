@@ -18,6 +18,7 @@ import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -106,8 +107,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("50");
 		
-		filterController.setDataTable(dataTable);
-		
+		filterController.setCollection(dataTable);
 		if(filterController.getOperationInitial() != null && page != null && !Boolean.TRUE.equals(page.getIsRenderTypeDialog())) {
 			Map<String, List<String>> parameters = filterController.asMap();
 			UserInterfaceAction addOrRemoveActCommandUserInterfaceAction = (UserInterfaceAction) MapHelper.readByKey(arguments, ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION);
@@ -161,9 +161,13 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		Map<String, List<String>> lParameters = parameters == null ? new HashMap<>() : new HashMap<>(parameters);
 		lParameters.put(Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION, List.of((add ? Boolean.FALSE : Boolean.TRUE).toString()));
 		lParameters.put(ParameterName.stringify(UsedFor.class), List.of(add ? UsedFor.ADD_TO_OPERATION.name() : UsedFor.REMOVE_FROM_OPERATION.name()));
+		if(userInterfaceAction == null)
+			userInterfaceAction = UserInterfaceAction.OPEN_VIEW_IN_DIALOG;
+		if(UserInterfaceAction.OPEN_VIEW_IN_DIALOG.equals(userInterfaceAction))
+			lParameters.put(AbstractFilterController.REQUEST_PARAMETER_NAME_REDIRECTABLE, List.of(Boolean.FALSE.toString()));
 		String label = (Boolean.TRUE.equals(add) ? "Ajouter" : "Retirer");
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD___OUTCOME__,OUTCOME,MenuItem.FIELD___PARAMETERS__,lParameters
-				, MenuItem.FIELD_VALUE,label,MenuItem.FIELD_ICON,"fa fa-"+(Boolean.TRUE.equals(add) ? "plus" : "minus"),MenuItem.FIELD_USER_INTERFACE_ACTION,ValueHelper.defaultToIfNull(userInterfaceAction,UserInterfaceAction.OPEN_VIEW_IN_DIALOG));
+				, MenuItem.FIELD_VALUE,label,MenuItem.FIELD_ICON,"fa fa-"+(Boolean.TRUE.equals(add) ? "plus" : "minus"),MenuItem.FIELD_USER_INTERFACE_ACTION,userInterfaceAction);
 		/*
 		dataTable.addHeaderToolbarLeftCommandsByArguments(MenuItem.FIELD_VALUE,(Boolean.TRUE.equals(add) ? "Ajouter" : "Retirer")+" les actes filtrés",MenuItem.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
 				,MenuItem.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE,MenuItem.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_RENDER_TYPES
@@ -247,7 +251,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		
 		@Override
 		protected Filter.Dto getFilter(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
-			return ActFilterController.instantiateFilter(filterController, Boolean.TRUE);
+			return ActFilterController.instantiateFilter(filterController);
 		}
 	}
 	

@@ -2,7 +2,6 @@ package ci.gouv.dgbf.system.cloture.client.act;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +20,6 @@ import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
-import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
@@ -58,7 +56,6 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	private CommandButton addToOperationCommandButton,removeFromOperationCommandButton;
 	
 	private UsedFor usedFor;
-	private DataTable dataTable;
 	
 	public ActFilterController(Boolean initializable) {
 		if(Boolean.TRUE.equals(initializable))
@@ -229,8 +226,23 @@ public class ActFilterController extends AbstractFilterController implements Ser
 			else if(UsedFor.REMOVE_FROM_OPERATION.equals(usedFor))
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.FALSE, Boolean.TRUE),Cell.FIELD_WIDTH,8));
 			width = 4;
+			isInitialValue = Boolean.FALSE;
 		}
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,width));
+		/*
+		CommandButton c = CommandButton.build(CommandButton.FIELD_VALUE,"Test Filtrer",CommandButton.FIELD_ICON,"fa fa-filter"
+				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_NULLABLE,Boolean.TRUE
+				,CommandButton.FIELD_LISTENER
+				,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected void runExecuteFunction(AbstractAction action) {
+				Ajax.oncomplete(String.format("PF('%s').filter();",dataTable.getWidgetVar()));
+			}
+		});
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,c,Cell.FIELD_WIDTH,12));
+		*/
 		return cellsMaps;
 	}
 	
@@ -254,7 +266,7 @@ public class ActFilterController extends AbstractFilterController implements Ser
 				Filter.Dto filter = ActFilterController.instantiateFilter(filterController, Boolean.FALSE);
 				OperationController controller = DependencyInjection.inject(OperationController.class);
 				Response response;
-				Collection<Act> acts = CollectionHelper.cast(Act.class,filterController.getDataTable().getSelectionAsCollection());
+				Collection<Act> acts = CollectionHelper.cast(Act.class,filterController.getCollection().getSelectionAsCollection());
 				if(CollectionHelper.isEmpty(acts)) {
 					if(add)
 						response = controller.addActByFilter(filterController.getOperation(), filter, existingIgnorable);
@@ -267,7 +279,6 @@ public class ActFilterController extends AbstractFilterController implements Ser
 						response = controller.removeAct(filterController.getOperation(), acts, existingIgnorable);
 				}
 				return ResponseHelper.getEntity(String.class, response);			
-				//return "Selected : "+filterController.getDataTable().getSelectionAsCollection();
 			}
 		},CommandButton.FIELD_STYLE_CLASS,"cyk-float-left");
 	}
@@ -366,6 +377,10 @@ public class ActFilterController extends AbstractFilterController implements Ser
 	
 	public static Filter.Dto instantiateFilter(ActFilterController controller,Boolean initial) {
 		return populateFilter(new Filter.Dto(), controller,initial);
+	}
+	
+	public static Filter.Dto instantiateFilter(ActFilterController controller) {
+		return instantiateFilter(controller, controller.getIsInitialValue());
 	}
 	
 	public static final String FIELD_TYPE_SELECT_ONE = "typeSelectOne";

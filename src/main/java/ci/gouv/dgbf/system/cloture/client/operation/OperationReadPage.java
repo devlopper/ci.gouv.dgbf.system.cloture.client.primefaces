@@ -9,7 +9,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.map.MapHelper;
-import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
@@ -78,7 +77,7 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 		filterController.setOperationInitial(operation);
 		filterController.setAddedToSelectedOperationInitial(Boolean.TRUE);
 		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
-		DataTable actsDataTable = ActListPage.buildDataTable(ActFilterController.class,filterController,ActListPage.class,this,ActListPage.ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION,UserInterfaceAction.NAVIGATE_TO_VIEW);
+		DataTable actsDataTable = ActListPage.buildDataTable(ActFilterController.class,filterController,ActListPage.class,this/*,ActListPage.ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG*/);
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actsDataTable,Cell.FIELD_WIDTH,12));
 	}
 	
@@ -109,7 +108,7 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 	public static final String TAB_ACTS = "actes";
 	public static final List<TabMenu.Tab> TABS = List.of(
 		new TabMenu.Tab("Récapitulatif",TAB_SUMMARY)
-		,new TabMenu.Tab(ci.gouv.dgbf.system.cloture.server.api.persistence.Act.NAME_PLURAL,TAB_ACTS)
+		//,new TabMenu.Tab(ci.gouv.dgbf.system.cloture.server.api.persistence.Act.NAME_PLURAL,TAB_ACTS)
 	);
 
 	public static final String OUTCOME = "operationReadView";
