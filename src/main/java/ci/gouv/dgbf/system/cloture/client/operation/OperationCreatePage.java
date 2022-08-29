@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.enumeration.Action;
 import org.cyk.utility.__kernel__.map.MapHelper;
@@ -24,7 +25,9 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.Comman
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityEditPageContainerManagedImpl;
+import org.cyk.utility.rest.ResponseHelper;
 
+import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
 import ci.gouv.dgbf.system.cloture.server.client.rest.OperationController;
 import ci.gouv.dgbf.system.cloture.server.client.rest.OperationType;
@@ -35,6 +38,8 @@ import lombok.Setter;
 @Named @ViewScoped @Getter @Setter
 public class OperationCreatePage extends AbstractEntityEditPageContainerManagedImpl<OperationCreatePage.Data> implements Serializable{
 
+	//private String createdOperationIdentifier;
+	
 	@Override
 	protected Form __buildForm__() {		
 		return buildForm(Form.FIELD_CONTAINER,this);
@@ -66,14 +71,16 @@ public class OperationCreatePage extends AbstractEntityEditPageContainerManagedI
 		@Override
 		public void act(Form form) { 
 			Data data = (Data) form.getEntity();
-			__inject__(OperationController.class).create(new Operation().setType(data.getType()).setCode(data.getCode()).setName(data.getName()).setReason(data.getReason()));
+			Response response = __inject__(OperationController.class).create(new Operation().setType(data.getType()).setCode(data.getCode()).setName(data.getName()).setReason(data.getReason()));
+			form.setRequest(ResponseHelper.getHeader(response, Parameters.OPERATION_IDENTIFIER));
+			//createdOperationIdentifier = ResponseHelper.getHeader(response, ResponseHelper.HEADER_ENTITY_IDENTIFIER_SYSTEM);
 		}
 		
 		@Override
 		public void redirect(Form form, Object request) {
 			AbstractPageContainerManagedImpl page = (AbstractPageContainerManagedImpl) form.getContainer();
 			if(page != null && !Boolean.TRUE.equals(page.getIsRenderTypeDialog()))
-				Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OperationListPage.OUTCOME));
+				Redirector.getInstance().redirect(new Redirector.Arguments().outcome(OperationReadPage.OUTCOME).addParameter(Parameters.OPERATION_IDENTIFIER, form.getRequest()));
 			else
 				super.redirect(form, request);
 		}
