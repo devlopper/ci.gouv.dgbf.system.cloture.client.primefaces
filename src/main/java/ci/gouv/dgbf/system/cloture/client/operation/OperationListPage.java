@@ -8,11 +8,14 @@ import java.util.Map;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
+import javax.ws.rs.core.Response;
 
+import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractCollection;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.AbstractDataTable;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.Column;
@@ -22,11 +25,13 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.ContextMe
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.OperationDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
+import ci.gouv.dgbf.system.cloture.server.client.rest.OperationController;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -98,6 +103,15 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		dataTable.addRecordMenuItemByArgumentsNavigateToView(null,OperationReadPage.OUTCOME, MenuItem.FIELD_VALUE,"Consulter",MenuItem.FIELD_ICON,"fa fa-eye");
 		//dataTable.addRecordMenuItemByArgumentsNavigateToView(null,OperationExecutePage.OUTCOME, MenuItem.FIELD_VALUE,"Exécuter",MenuItem.FIELD_ICON,"fa fa-gear");
 		
+		dataTable.addRecordMenuItemByArgumentsExecuteFunction("Exécuter","fa fa-gear",new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				Operation operation = (Operation) action.readArgument();
+				Response response = DependencyInjection.inject(OperationController.class).startExecution(operation);
+				return ResponseHelper.getEntity(String.class, response);
+			}
+		});
+		
 		dataTable.setEntityIdentifierParameterName(Parameters.OPERATION_IDENTIFIER);
 		
 		return dataTable;
@@ -126,6 +140,12 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 			}else if(Operation.FIELD_REASON.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Motif");
 				map.put(Column.FIELD_WIDTH, "400");
+			}else if(Operation.FIELD_STATUS_AS_STRING.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Statut");
+				map.put(Column.FIELD_WIDTH, "120");
+			}else if(Operation.FIELD___AUDIT__.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "Audit");
+				map.put(Column.FIELD_WIDTH, "400");
 			}
 			return map;
 		}
@@ -144,7 +164,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(OperationDto.JSON_IDENTIFIER,OperationDto.JSON_CODE,OperationDto.JSON_NAME,OperationDto.JSON_TYPE_AS_STRING,OperationDto.JSON_REASON);
+			return List.of(OperationDto.JSONS_STRINGS,OperationDto.JSON___AUDIT__);
 		}
 		
 		@Override

@@ -21,6 +21,7 @@ import org.cyk.utility.service.client.SpecificController;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.OperationTypeDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
+import ci.gouv.dgbf.system.cloture.server.client.rest.OperationStatus;
 import ci.gouv.dgbf.system.cloture.server.client.rest.OperationType;
 import ci.gouv.dgbf.system.cloture.server.client.rest.OperationTypeController;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class OperationFilterController extends AbstractFilterController implemen
 	protected SelectOneCombo typeSelectOne;
 	
 	protected OperationType typeInitial;
+	protected OperationStatus statusInitial;
 	
 	public OperationFilterController(Boolean initializable) {
 		if(Boolean.TRUE.equals(initializable))
@@ -136,6 +138,9 @@ public class OperationFilterController extends AbstractFilterController implemen
 		if(typeInitial == null)
 			columnsFieldsNames.add(Operation.FIELD_TYPE_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Operation.FIELD_CODE,Operation.FIELD_NAME,Operation.FIELD_REASON));
+		if(statusInitial == null)
+			columnsFieldsNames.add(Operation.FIELD_STATUS_AS_STRING);
+		columnsFieldsNames.addAll(List.of(Operation.FIELD___AUDIT__));
 		return columnsFieldsNames;
 	}
 	
