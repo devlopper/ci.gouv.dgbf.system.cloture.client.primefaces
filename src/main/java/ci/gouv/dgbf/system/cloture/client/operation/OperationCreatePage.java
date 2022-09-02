@@ -118,7 +118,7 @@ public class OperationCreatePage extends AbstractEntityEditPageContainerManagedI
 		@NotNull @Input @InputChoice @InputChoiceOne @InputChoiceOneCombo private OperationType type;
 		@Input @InputText private String code;
 		@Input @InputText private String name;
-		@Input @InputText private String reason;
+		@NotNull @Input @InputText private String reason;
 		
 		public static final String FIELD_TYPE = "type";
 		public static final String FIELD_CODE = "code";
