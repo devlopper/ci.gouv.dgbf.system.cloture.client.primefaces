@@ -9,10 +9,14 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import org.cyk.utility.__kernel__.map.MapHelper;
+import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.Redirector;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.collection.DataTable;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
@@ -72,6 +76,20 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 		OperationReadController readController = new OperationReadController(operation);
 		readController.initialize();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,readController.getLayout(),Cell.FIELD_WIDTH,12));
+		
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Exécuter",CommandButton.FIELD_ICON,"fa fa-gear"
+				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+				,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_NULLABLE,Boolean.TRUE
+				,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
+				,CommandButton.FIELD_LISTENER
+				,new AbstractAction.Listener.AbstractImpl() {
+			@Override
+			protected Object __runExecuteFunction__(AbstractAction action) {
+				__inject__(OperationController.class).startExecution(operation);
+				__inject__(Redirector.class).redirect(OUTCOME, Map.of(Parameters.OPERATION_IDENTIFIER,List.of(operation.getIdentifier())));
+				return null;
+			}
+		}),Cell.FIELD_WIDTH,12));
 		
 		ActFilterController filterController = new ActFilterController();
 		filterController.setOperationInitial(operation);

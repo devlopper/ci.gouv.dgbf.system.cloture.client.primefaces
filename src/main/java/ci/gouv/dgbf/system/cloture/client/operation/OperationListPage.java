@@ -40,6 +40,7 @@ import lombok.experimental.Accessors;
 public class OperationListPage extends AbstractEntityListPageContainerManagedImpl<Operation> implements Serializable {
 
 	private OperationFilterController filterController;
+	private String colorColumnFieldName = Operation.FIELD_NAME;
 	//@Inject private SpecificServiceGetter specificServiceGetter;
 	
 	@Override
@@ -132,6 +133,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 			if(Operation.FIELD_CODE.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Code");
 				map.put(Column.FIELD_WIDTH, "100");
+				map.put(Column.FIELD_VISIBLE, Boolean.FALSE);
 			}else if(Operation.FIELD_NAME.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Libelle");
 			}else if(Operation.FIELD_TYPE_AS_STRING.equals(fieldName)) {
@@ -164,7 +166,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(OperationDto.JSONS_STRINGS,OperationDto.JSON___AUDIT__);
+			return List.of(OperationDto.JSONS_STRINGS,OperationDto.JSON_COLOR,OperationDto.JSON___AUDIT__);
 		}
 		
 		@Override

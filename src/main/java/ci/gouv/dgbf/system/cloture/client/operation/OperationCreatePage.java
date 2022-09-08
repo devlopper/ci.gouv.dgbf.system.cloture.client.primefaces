@@ -56,7 +56,7 @@ public class OperationCreatePage extends AbstractEntityEditPageContainerManagedI
 		MapHelper.writeByKeyDoNotOverride(map, Form.FIELD_ENTITY_CLASS, Data.class);
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_ACTION, Action.CREATE);
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_CONTROLLER_ENTITY_INJECTABLE, Boolean.FALSE);
-		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Data.FIELD_TYPE,Data.FIELD_CODE,Data.FIELD_NAME,Data.FIELD_REASON));
+		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_INPUTS_FIELDS_NAMES, List.of(Data.FIELD_TYPE,Data.FIELD_REASON,Data.FIELD_CODE,Data.FIELD_NAME));
 		MapHelper.writeByKeyDoNotOverride(map,Form.ConfiguratorImpl.FIELD_LISTENER, new FormConfiguratorListenerImpl());		
 		MapHelper.writeByKeyDoNotOverride(map,Form.FIELD_LISTENER, new FormListenerImpl());
 		Form form = Form.build(map);

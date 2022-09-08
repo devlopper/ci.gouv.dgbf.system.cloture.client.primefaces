@@ -47,6 +47,8 @@ public class OperationReadController extends AbstractReadController implements S
 		addLabelValue(cellsMaps, "Code", operation.getCode());
 		addLabelValue(cellsMaps, "Libellé", operation.getName());
 		addLabelValue(cellsMaps, "Motif", operation.getReason());
+		addLabelValue(cellsMaps, "Statut", operation.getStatusAsString());
+		addLabelValue(cellsMaps, "Audit", operation.get__audit__());
 		return Layout.build(Layout.FIELD_CELL_WIDTH_UNIT,Cell.WidthUnit.UI_G,Layout.ConfiguratorImpl.FIELD_LABEL_VALUE,Boolean.TRUE,Layout.ConfiguratorImpl.FIELD_CELLS_MAPS,cellsMaps);
 	}
 }

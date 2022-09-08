@@ -8,6 +8,12 @@
 		<from-view-id>*</from-view-id>
 		
 		<navigation-case>
+			<from-outcome>indexView</from-outcome>
+			<to-view-id>/private/operation/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<navigation-case>
 			<from-outcome>actListView</from-outcome>
 			<to-view-id>/private/act/list/index.jsf</to-view-id>
 			<redirect />
