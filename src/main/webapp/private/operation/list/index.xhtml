@@ -10,20 +10,18 @@
 	
     <cyk:page value="#{operationListPage}">
     	<ui:define name="centerCenter">
-    		
+    		<style>
+				.marker {
+					height: 12px;
+				 	width: 12px;
+				 	border-radius: 50%;
+				 	display: inline-block;
+				}
+			</style>
     		
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(operationListPage.dataTable)}">
     			<ui:param name="dataTable" value="#{operationListPage.dataTable}"/>  
     			<ui:define name="collectionColumnsAfterRowIndexBodies">
-    				<style>
-						.marker {
-							height: 12px;
-						 	width: 12px;
-						 	border-radius: 50%;
-						 	display: inline-block;
-						}
-					</style>
-
 					<ui:fragment rendered="#{column.fieldName eq __page__.colorColumnFieldName}">
 					<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
 						<ui:fragment rendered="#{not empty record.color.hexadecimal}">
