@@ -1,6 +1,7 @@
 package ci.gouv.dgbf.system.cloture.client.operation;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.array.ArrayHelper;
+import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.__kernel__.value.ValueHelper;
@@ -26,6 +28,8 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.page.AbstractEntityListPageContainerManagedImpl;
 import org.cyk.utility.persistence.query.Filter;
 import org.cyk.utility.rest.ResponseHelper;
+import org.omnifaces.util.Ajax;
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.SortOrder;
 
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
@@ -41,7 +45,7 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 
 	private OperationFilterController filterController;
 	private String colorColumnFieldName = Operation.FIELD_NAME;
-	//@Inject private SpecificServiceGetter specificServiceGetter;
+	private String pollWidgetVar = "poll";
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
@@ -54,6 +58,23 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		if(filterController == null)
 			return super.__getWindowTitleValue__(); 
 		return filterController.generateWindowTitleValue(ci.gouv.dgbf.system.cloture.server.api.persistence.Operation.NAME);
+	}
+	
+	public Boolean isAtLeastOneStarted() {
+		Collection<Operation> operations = ((LazyDataModel)dataTable.getValue()).get__list__();
+		if(CollectionHelper.isEmpty(operations))
+			return Boolean.FALSE;
+		for(Operation operation : operations)
+			if(Boolean.TRUE.equals(operation.getStarted()))
+				return Boolean.TRUE;
+		return Boolean.FALSE;
+	}
+	
+	public void poll() {
+		if(Boolean.TRUE.equals(isAtLeastOneStarted()))
+			Ajax.oncomplete(String.format("PF('%s').filter();", dataTable.getWidgetVar()));
+		else
+			Ajax.oncomplete(String.format("PF('%s').stop();", pollWidgetVar));
 	}
 	
 	@Override

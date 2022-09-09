@@ -19,11 +19,13 @@
 				}
 			</style>
     		
+    		<p:poll interval="10" listener="#{operationListPage.poll}" widgetVar="#{operationListPage.pollWidgetVar}" rendered="#{operationListPage.isAtLeastOneStarted()}"/>
+    		
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(operationListPage.dataTable)}">
     			<ui:param name="dataTable" value="#{operationListPage.dataTable}"/>  
     			<ui:define name="collectionColumnsAfterRowIndexBodies">
 					<ui:fragment rendered="#{column.fieldName eq __page__.colorColumnFieldName}">
-					<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
+						<ui:decorate template="/collection/datatable/__columns__bodies.xhtml" />
 						<ui:fragment rendered="#{not empty record.color.hexadecimal}">
 							<div class="marker" style="background-color: #{record.color.hexadecimal};"/>	
 						</ui:fragment>
