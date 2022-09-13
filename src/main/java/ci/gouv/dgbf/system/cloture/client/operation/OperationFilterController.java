@@ -170,7 +170,7 @@ public class OperationFilterController extends AbstractFilterController implemen
 		Collection<String> columnsFieldsNames = new ArrayList<>();
 		if(typeInitial == null)
 			columnsFieldsNames.add(Operation.FIELD_TYPE_AS_STRING);
-		columnsFieldsNames.addAll(List.of(Operation.FIELD_CODE,Operation.FIELD_NAME,Operation.FIELD_REASON));
+		columnsFieldsNames.addAll(List.of(Operation.FIELD_CODE,Operation.FIELD_NAME,Operation.FIELD_REASON,Operation.FIELD_NUMBER_OF_ACTS));
 		if(statusInitial == null)
 			columnsFieldsNames.add(Operation.FIELD_STATUS_AS_STRING);
 		columnsFieldsNames.addAll(List.of(Operation.FIELD___AUDIT__));

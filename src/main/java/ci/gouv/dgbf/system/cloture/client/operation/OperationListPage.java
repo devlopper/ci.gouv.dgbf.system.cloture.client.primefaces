@@ -43,9 +43,10 @@ import lombok.experimental.Accessors;
 @Named @ViewScoped @Getter @Setter
 public class OperationListPage extends AbstractEntityListPageContainerManagedImpl<Operation> implements Serializable {
 
+	public static final String POLL_WIDGET_VAR = "poll";
+	
 	private OperationFilterController filterController;
 	private String colorColumnFieldName = Operation.FIELD_NAME;
-	private String pollWidgetVar = "poll";
 	
 	@Override
 	protected void __listenBeforePostConstruct__() {
@@ -61,6 +62,8 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 	}
 	
 	public Boolean isAtLeastOneStarted() {
+		if(((LazyDataModel)dataTable.getValue()).get__count__() == null)
+			return Boolean.TRUE;
 		Collection<Operation> operations = ((LazyDataModel)dataTable.getValue()).get__list__();
 		if(CollectionHelper.isEmpty(operations))
 			return Boolean.FALSE;
@@ -71,10 +74,35 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 	}
 	
 	public void poll() {
-		if(Boolean.TRUE.equals(isAtLeastOneStarted()))
+		poll(dataTable);
+	}
+	
+	private static Boolean isAtLeastOneStarted(DataTable dataTable) {
+		if(((LazyDataModel)dataTable.getValue()).get__count__() == null)
+			return Boolean.TRUE;
+		Collection<Operation> operations = ((LazyDataModel)dataTable.getValue()).get__list__();
+		if(CollectionHelper.isEmpty(operations))
+			return Boolean.FALSE;
+		for(Operation operation : operations)
+			if(Boolean.TRUE.equals(operation.getStarted()))
+				return Boolean.TRUE;
+		return Boolean.FALSE;
+	}
+	
+	private static void poll(DataTable dataTable) {
+		if(Boolean.TRUE.equals(isAtLeastOneStarted(dataTable)))
 			Ajax.oncomplete(String.format("PF('%s').filter();", dataTable.getWidgetVar()));
 		else
-			Ajax.oncomplete(String.format("PF('%s').stop();", pollWidgetVar));
+			stopPoll();
+	}
+	
+	private static void startPoll(DataTable dataTable) {
+		if(Boolean.TRUE.equals(isAtLeastOneStarted(dataTable)))
+			Ajax.oncomplete(String.format("PF('%s').start();", POLL_WIDGET_VAR));
+	}
+	
+	private static void stopPoll() {
+		Ajax.oncomplete(String.format("PF('%s').stop();", POLL_WIDGET_VAR));
 	}
 	
 	@Override
@@ -116,6 +144,8 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		
 		DataTable dataTable = DataTable.build(arguments);
 		dataTable.setFilterController(filterController);
+		if(filterController.getCollection() == null)
+			filterController.setCollection(dataTable);
 		dataTable.setAreColumnsChoosable(Boolean.TRUE);      
 		dataTable.getOrderNumberColumn().setWidth("40");
 		
@@ -162,13 +192,15 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 				map.put(Column.FIELD_WIDTH, "120");
 			}else if(Operation.FIELD_REASON.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Motif");
-				map.put(Column.FIELD_WIDTH, "400");
+			}else if(Operation.FIELD_NUMBER_OF_ACTS.equals(fieldName)) {
+				map.put(Column.FIELD_HEADER_TEXT, "#Actes");
+				map.put(Column.FIELD_WIDTH, "80");
 			}else if(Operation.FIELD_STATUS_AS_STRING.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Statut");
-				map.put(Column.FIELD_WIDTH, "120");
+				map.put(Column.FIELD_WIDTH, "110");
 			}else if(Operation.FIELD___AUDIT__.equals(fieldName)) {
 				map.put(Column.FIELD_HEADER_TEXT, "Audit");
-				map.put(Column.FIELD_WIDTH, "400");
+				map.put(Column.FIELD_WIDTH, "500");
 			}
 			return map;
 		}
@@ -187,12 +219,26 @@ public class OperationListPage extends AbstractEntityListPageContainerManagedImp
 		@Override
 		protected List<String> getProjections(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,
 				int firstTupleIndex, int numberOfTuples) {
-			return List.of(OperationDto.JSONS_STRINGS,OperationDto.JSON_COLOR,OperationDto.JSON___AUDIT__);
+			return List.of(OperationDto.JSONS_STRINGS,OperationDto.JSONS_STATUSES,OperationDto.JSON_NUMBER_OF_ACTS,OperationDto.JSON_COLOR,OperationDto.JSON___AUDIT__);
 		}
 		
 		@Override
 		protected Filter.Dto getFilter(Map<String, Object> filters, LinkedHashMap<String, SortOrder> sortOrders,int firstTupleIndex, int numberOfTuples) {
 			return OperationFilterController.instantiateFilter(filterController, Boolean.TRUE);
+		}
+		
+		@Override
+		protected void processWhenListIsEmpty() {
+			super.processWhenListIsEmpty();
+			if(PrimeFaces.current().isAjaxRequest())
+				stopPoll();
+		}
+		
+		@Override
+		protected void process(Collection<Operation> list) {
+			super.process(list);
+			if(PrimeFaces.current().isAjaxRequest())
+				startPoll((DataTable) filterController.getCollection());
 		}
 	}
 	

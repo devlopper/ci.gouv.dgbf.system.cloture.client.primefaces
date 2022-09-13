@@ -45,7 +45,7 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 	protected void __listenPostConstruct__() {
 		super.__listenPostConstruct__();
 		operation = __inject__(OperationController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.OPERATION_IDENTIFIER)
-				,new Controller.GetArguments().projections(OperationDto.JSON_IDENTIFIER,OperationDto.JSONS_STRINGS,OperationDto.JSON___AUDIT__));
+				,new Controller.GetArguments().projections(OperationDto.JSON_IDENTIFIER,OperationDto.JSONS_STRINGS,OperationDto.JSONS_STATUSES,OperationDto.JSON___AUDIT__));
 		if(operation == null)
 			return;
 		Collection<Map<Object,Object>> cellsMaps = new ArrayList<>();
@@ -77,19 +77,20 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 		readController.initialize();
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,readController.getLayout(),Cell.FIELD_WIDTH,12));
 		
-		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Exécuter",CommandButton.FIELD_ICON,"fa fa-gear"
-				,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
-				,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_NULLABLE,Boolean.TRUE
-				,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
-				,CommandButton.FIELD_LISTENER
-				,new AbstractAction.Listener.AbstractImpl() {
-			@Override
-			protected Object __runExecuteFunction__(AbstractAction action) {
-				__inject__(OperationController.class).startExecution(operation);
-				__inject__(Redirector.class).redirect(OUTCOME, Map.of(Parameters.OPERATION_IDENTIFIER,List.of(operation.getIdentifier())));
-				return null;
-			}
-		}),Cell.FIELD_WIDTH,12));
+		if(Boolean.TRUE.equals(operation.getCreated()))
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,CommandButton.build(CommandButton.FIELD_VALUE,"Exécuter",CommandButton.FIELD_ICON,"fa fa-gear"
+					,CommandButton.FIELD_USER_INTERFACE_ACTION,UserInterfaceAction.EXECUTE_FUNCTION
+					,CommandButton.ConfiguratorImpl.FIELD_RUNNER_ARGUMENTS_SUCCESS_MESSAGE_ARGUMENTS_NULLABLE,Boolean.TRUE
+					,CommandButton.ConfiguratorImpl.FIELD_CONFIRMABLE,Boolean.TRUE
+					,CommandButton.FIELD_LISTENER
+					,new AbstractAction.Listener.AbstractImpl() {
+				@Override
+				protected Object __runExecuteFunction__(AbstractAction action) {
+					__inject__(OperationController.class).startExecution(operation);
+					__inject__(Redirector.class).redirect(OUTCOME, Map.of(Parameters.OPERATION_IDENTIFIER,List.of(operation.getIdentifier())));
+					return null;
+				}
+			}),Cell.FIELD_WIDTH,12));
 		
 		ActFilterController filterController = new ActFilterController();
 		filterController.setOperationInitial(operation);

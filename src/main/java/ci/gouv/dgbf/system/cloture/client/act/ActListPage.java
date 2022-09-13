@@ -108,7 +108,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 		dataTable.getOrderNumberColumn().setWidth("50");
 		
 		filterController.setCollection(dataTable);
-		if(filterController.getOperationInitial() != null && page != null && !Boolean.TRUE.equals(page.getIsRenderTypeDialog())) {
+		if(filterController.getOperationInitial() != null && Boolean.TRUE.equals(filterController.getOperationInitial().getCreated()) && page != null && !Boolean.TRUE.equals(page.getIsRenderTypeDialog())) {
 			Map<String, List<String>> parameters = filterController.asMap();
 			UserInterfaceAction addOrRemoveActCommandUserInterfaceAction = (UserInterfaceAction) MapHelper.readByKey(arguments, ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION);
 			addHeaderAddOrRemoveActCommand(dataTable, Boolean.TRUE, parameters,addOrRemoveActCommandUserInterfaceAction);

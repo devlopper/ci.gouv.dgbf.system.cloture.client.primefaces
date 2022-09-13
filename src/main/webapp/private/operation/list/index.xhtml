@@ -19,7 +19,8 @@
 				}
 			</style>
     		
-    		<p:poll interval="10" listener="#{operationListPage.poll}" widgetVar="#{operationListPage.pollWidgetVar}" rendered="#{operationListPage.isAtLeastOneStarted()}"/>
+    		<p:importConstants type="ci.gouv.dgbf.system.cloture.client.operation.OperationListPage" var="OperationListPage" />
+    		<p:poll interval="3" listener="#{operationListPage.poll}" widgetVar="#{OperationListPage.POLL_WIDGET_VAR}" async="false" global="false"/>
     		
     		<ui:decorate template="#{primefacesHelper.getModelTemplate(operationListPage.dataTable)}">
     			<ui:param name="dataTable" value="#{operationListPage.dataTable}"/>  
