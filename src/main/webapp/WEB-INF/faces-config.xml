@@ -13,6 +13,8 @@
 			<redirect />
 		</navigation-case>
 		
+		<!-- Acts -->
+		
 		<navigation-case>
 			<from-outcome>actListView</from-outcome>
 			<to-view-id>/private/act/list/index.jsf</to-view-id>
@@ -36,6 +38,16 @@
 			<to-view-id>/private/act/lock/actlocks.jsf</to-view-id>
 			<redirect />
 		</navigation-case>
+		
+		<!-- Imputations -->
+		
+		<navigation-case>
+			<from-outcome>imputationListView</from-outcome>
+			<to-view-id>/private/imputation/list/index.jsf</to-view-id>
+			<redirect />
+		</navigation-case>
+		
+		<!-- Operations -->
 		
 		<navigation-case>
 			<from-outcome>operationListView</from-outcome>
