@@ -17,24 +17,28 @@ import org.cyk.utility.__kernel__.map.MapHelper;
 import org.cyk.utility.__kernel__.string.StringHelper;
 import org.cyk.utility.__kernel__.user.interface_.UserInterfaceAction;
 import org.cyk.utility.client.controller.web.WebController;
+import org.cyk.utility.client.controller.web.jsf.converter.ObjectConverter;
 import org.cyk.utility.client.controller.web.jsf.primefaces.AbstractPageContainerManagedImpl;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractAction;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.AbstractFilterController;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.command.CommandButton;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInput;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoice;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AbstractInputChoiceOne;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.AutoComplete;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputText;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
-import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 import org.cyk.utility.service.client.SpecificController;
 
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
+import ci.gouv.dgbf.system.cloture.server.api.service.ExerciseDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Activity;
 import ci.gouv.dgbf.system.cloture.server.client.rest.ActivityController;
+import ci.gouv.dgbf.system.cloture.server.client.rest.Exercise;
+import ci.gouv.dgbf.system.cloture.server.client.rest.ExerciseController;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Imputation;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
 import ci.gouv.dgbf.system.cloture.server.client.rest.OperationController;
@@ -45,12 +49,13 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain=true)
 public class ImputationFilterController extends AbstractFilterController implements Serializable {
 
-	private SelectOneCombo operationSelectOne,addedToSelectedOperationSelectOne;
+	private SelectOneCombo exerciseSelectOne,operationSelectOne,addedToSelectedOperationSelectOne;
 	private InputText codesInputText;
 	private InputText searchInputText;
 	
 	protected AutoComplete activityAutoComplete;
 	
+	protected Exercise exerciseInitial;
 	protected Activity activityInitial;
 	
 	private Operation operationInitial;
@@ -74,6 +79,9 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	
 	@Override
 	public AbstractFilterController initialize() {
+		if(exerciseInitial == null)
+			exerciseInitial = __inject__(ExerciseController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.EXERCISE_IDENTIFIER)
+				,new Controller.GetArguments().projections(ExerciseDto.JSON_IDENTIFIER,ExerciseDto.JSON_YEAR));
 		//if(typeInitial == null)
 		//	typeInitial = __inject__(ActTypeController.class).getByIdentifierOrDefaultIfIdentifierIsBlank(WebController.getInstance().getRequestParameter(Parameters.ACT_TYPE_IDENTIFIER)
 		//		,new Controller.GetArguments().projections(ActTypeDto.JSON_IDENTIFIER,ActTypeDto.JSON_NAME));
@@ -94,6 +102,7 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	@Override
 	public void __addInputsByBasedOnFieldsNames__() {
 		super.__addInputsByBasedOnFieldsNames__();
+		addInputSelectOneByBaseFieldName("exercise");
 		addInputAutoCompleteByBaseFieldName("activity");
 		/*
 		addInputSelectOneByBaseFieldName("operation");
@@ -104,6 +113,8 @@ public class ImputationFilterController extends AbstractFilterController impleme
 
 	@Override
 	protected Object __getControllerByInputFieldName__(String fieldName) {
+		if(FIELD_EXERCISE_SELECT_ONE.equals(fieldName))
+			return __inject__(ExerciseController.class);
 		if(FIELD_ACTIVITY_AUTO_COMPLETE.equals(fieldName))
 			return __inject__(ActivityController.class);
 		if(FIELD_OPERATION_SELECT_ONE.equals(fieldName))
@@ -118,6 +129,8 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	
 	protected void selectByValueSystemIdentifier() {
 		super.selectByValueSystemIdentifier();
+		if(exerciseSelectOne != null)
+			exerciseSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 		if(operationSelectOne != null)
 			operationSelectOne.selectFirstChoiceIfValueIsNullElseSelectByValueSystemIdentifier();
 	}
@@ -130,6 +143,8 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	
 	@Override
 	protected AbstractInput<?> buildInput(String fieldName, Object value) {
+		if(FIELD_EXERCISE_SELECT_ONE.equals(fieldName))
+			return buildExerciseSelectOne((Exercise) value);
 		if(FIELD_ACTIVITY_AUTO_COMPLETE.equals(fieldName))
 			return buildActivityAutoComplete((Activity) value);
 		if(FIELD_OPERATION_SELECT_ONE.equals(fieldName))
@@ -141,6 +156,30 @@ public class ImputationFilterController extends AbstractFilterController impleme
 		if(FIELD_ADDED_TO_SELECTED_OPERATION_SELECT_ONE.equals(fieldName))
 			return buildInputAddedToSelectedOperation((Boolean) value);
 		return null;
+	}
+	
+	private SelectOneCombo buildExerciseSelectOne(Exercise exercise) {
+		SelectOneCombo input = SelectOneCombo.build(SelectOneCombo.FIELD_VALUE,exercise,SelectOneCombo.FIELD_CHOICE_CLASS,Exercise.class,SelectOneCombo.FIELD_LISTENER
+				,new SelectOneCombo.Listener.AbstractImpl<Exercise>() {
+			@Override
+			protected Collection<Exercise> __computeChoices__(AbstractInputChoice<Exercise> input,Class<?> entityClass) {
+				Collection<Exercise> choices = __inject__(ExerciseController.class).get(new Controller.GetArguments().projections(ExerciseDto.JSON_IDENTIFIER,ExerciseDto.JSON_YEAR));
+				return choices;
+			}
+			@Override
+			public Object getChoiceLabel(AbstractInputChoice<Exercise> input, Exercise choice) {
+				if(choice == null)
+					return super.getChoiceLabel(input, choice);
+				return choice.getYear();
+			}
+			@Override
+			public void select(AbstractInputChoiceOne input, Exercise exercise) {
+				super.select(input, exercise);
+				
+			}
+		},SelectOneCombo.ConfiguratorImpl.FIELD_OUTPUT_LABEL_VALUE,ci.gouv.dgbf.system.cloture.server.api.persistence.Exercise.NAME,SelectOneCombo.FIELD_CONVERTER,new ObjectConverter());
+		input.updateChoices();
+		return input;
 	}
 	
 	private AutoComplete buildActivityAutoComplete(Activity activity) {
@@ -192,6 +231,8 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	
 	@Override
 	protected String buildParameterName(String fieldName, AbstractInput<?> input) {
+		if(FIELD_EXERCISE_SELECT_ONE.equals(fieldName) || (input != null && input == exerciseSelectOne))
+			return Parameters.EXERCISE_IDENTIFIER;
 		if(FIELD_ACTIVITY_AUTO_COMPLETE.equals(fieldName) || (input != null && input == activityAutoComplete))
 			return Parameters.ACTIVITY_IDENTIFIER;
 		if(FIELD_OPERATION_SELECT_ONE.equals(fieldName) || (input != null && input == operationSelectOne))
@@ -208,9 +249,14 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	@Override
 	protected Collection<Map<Object, Object>> buildLayoutCells() {
 		Collection<Map<Object, Object>> cellsMaps = new ArrayList<>();
+		if(exerciseSelectOne != null) {
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,exerciseSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,exerciseSelectOne,Cell.FIELD_WIDTH,1));
+		}
+		
 		if(activityAutoComplete != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityAutoComplete.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityAutoComplete,Cell.FIELD_WIDTH,11));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityAutoComplete,Cell.FIELD_WIDTH,9));
 		}
 		/*
 		if(operationSelectOne != null) {
@@ -232,18 +278,18 @@ public class ImputationFilterController extends AbstractFilterController impleme
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,searchInputText,Cell.FIELD_WIDTH,11));
 		}
-		
+		*/
 		Integer width = 12;
-		if(UsedFor.ADD_TO_OPERATION.equals(usedFor) || UsedFor.REMOVE_FROM_OPERATION.equals(usedFor)) {
+		/*if(UsedFor.ADD_TO_OPERATION.equals(usedFor) || UsedFor.REMOVE_FROM_OPERATION.equals(usedFor)) {
 			if(UsedFor.ADD_TO_OPERATION.equals(usedFor))
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.TRUE, Boolean.TRUE),Cell.FIELD_WIDTH,8));
 			else if(UsedFor.REMOVE_FROM_OPERATION.equals(usedFor))
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.FALSE, Boolean.TRUE),Cell.FIELD_WIDTH,8));
 			width = 4;
 			isInitialValue = Boolean.FALSE;
-		}
+		}*/
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,width));
-		*/
+		
 		return cellsMaps;
 	}
 	
@@ -288,6 +334,10 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	public String generateWindowTitleValue(String prefix) {
 		Collection<String> strings = new ArrayList<>();
 		strings.add(prefix);
+		if(exerciseInitial != null)
+			strings.add(String.format("%s : %s",ci.gouv.dgbf.system.cloture.server.api.persistence.Exercise.NAME, exerciseInitial.toString()));
+		if(activityInitial != null)
+			strings.add(String.format("%s : %s",ci.gouv.dgbf.system.cloture.server.api.persistence.Activity.NAME, activityInitial.toString()));
 		if(operationInitial != null) {
 			strings.add(String.format("%s : %s",ci.gouv.dgbf.system.cloture.server.api.persistence.Operation.NAME, operationInitial.toString()));
 			if(addedToSelectedOperationInitial != null)
@@ -300,10 +350,16 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	
 	public Collection<String> generateColumnsNames() {
 		Collection<String> columnsFieldsNames = new ArrayList<>();
-		columnsFieldsNames.add(Imputation.FIELD_EXERCISE_AS_STRING);
-		columnsFieldsNames.add(Imputation.FIELD_ACTIVITY_AS_STRING);
+		if(exerciseInitial == null)
+			columnsFieldsNames.add(Imputation.FIELD_EXERCISE_AS_STRING);
+		if(activityInitial == null)
+			columnsFieldsNames.add(Imputation.FIELD_ACTIVITY_AS_STRING);
 		columnsFieldsNames.add(Imputation.FIELD_ECONOMIC_NATURE_AS_STRING);
 		return columnsFieldsNames;
+	}
+	
+	public Exercise getExercise() {
+		return (Exercise)AbstractInput.getValue(exerciseSelectOne);
 	}
 	
 	public Activity getActivity() {
@@ -353,6 +409,9 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	/**/
 	
 	public static Filter.Dto populateFilter(Filter.Dto filter,ImputationFilterController controller,Boolean initial) {
+		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.EXERCISE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.exerciseInitial : controller.getExercise()), filter);
+		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.activityInitial : controller.getActivity()), filter);
+		/*
 		String operationIdentifier = (String) FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.operationInitial : controller.getOperation());
 		if(StringHelper.isNotBlank(operationIdentifier)) {
 			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.OPERATION_IDENTIFIER, operationIdentifier, filter);
@@ -369,6 +428,7 @@ public class ImputationFilterController extends AbstractFilterController impleme
 				filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ACTS_CODES, codes, filter);
 		}		
 		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.SEARCH, Boolean.TRUE.equals(initial) ? controller.searchInitial : controller.getSearch(), filter);
+		*/
 		return filter;
 	}
 	
@@ -380,6 +440,7 @@ public class ImputationFilterController extends AbstractFilterController impleme
 		return instantiateFilter(controller, controller.getIsInitialValue());
 	}
 	
+	public static final String FIELD_EXERCISE_SELECT_ONE = "exerciseSelectOne";
 	public static final String FIELD_ACTIVITY_AUTO_COMPLETE = "activityAutoComplete";
 	public static final String FIELD_SEARCH_INPUT_TEXT = "searchInputText";
 	public static final String FIELD_CODES_INPUT_TEXT = "codesInputText";
