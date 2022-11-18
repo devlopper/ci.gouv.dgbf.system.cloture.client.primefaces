@@ -22,6 +22,7 @@ public class OperationReadController extends AbstractReadController implements S
 
 	private Operation operation;
 	private DataTable actsDataTable;
+	private DataTable imputationsDataTable;
 	
 	public OperationReadController(Operation operation) {
 		this.operation = operation;

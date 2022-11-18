@@ -187,7 +187,7 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || (input != null && input == searchInputText))
 			return Parameters.SEARCH;
 		if(FIELD_ADDED_TO_SELECTED_OPERATION_SELECT_ONE.equals(fieldName) ||(input != null && input == addedToSelectedOperationSelectOne))
-			return Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION;
+			return Parameters.ADDED_TO_SPECIFIED_OPERATION;
 		return super.buildParameterName(fieldName, input);
 	}
 	
@@ -359,7 +359,7 @@ public class ActFilterController extends AbstractFilterController implements Ser
 		String operationIdentifier = (String) FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.operationInitial : controller.getOperation());
 		if(StringHelper.isNotBlank(operationIdentifier)) {
 			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.OPERATION_IDENTIFIER, operationIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION,Boolean.TRUE.equals(initial) ? controller.addedToSelectedOperationInitial : controller.getAddedToSelectedOperation(), filter);
+			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ADDED_TO_SPECIFIED_OPERATION,Boolean.TRUE.equals(initial) ? controller.addedToSelectedOperationInitial : controller.getAddedToSelectedOperation(), filter);
 		}
 		
 		String codesAsString = Boolean.TRUE.equals(initial) ? controller.codesInitial : controller.getCodes();

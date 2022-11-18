@@ -159,7 +159,7 @@ public class ActListPage extends AbstractEntityListPageContainerManagedImpl<Act>
 	
 	public static void addHeaderAddOrRemoveActCommand(DataTable dataTable,Boolean add,Map<String, List<String>> parameters,UserInterfaceAction userInterfaceAction) {
 		Map<String, List<String>> lParameters = parameters == null ? new HashMap<>() : new HashMap<>(parameters);
-		lParameters.put(Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION, List.of((add ? Boolean.FALSE : Boolean.TRUE).toString()));
+		lParameters.put(Parameters.ADDED_TO_SPECIFIED_OPERATION, List.of((add ? Boolean.FALSE : Boolean.TRUE).toString()));
 		lParameters.put(ParameterName.stringify(UsedFor.class), List.of(add ? UsedFor.ADD_TO_OPERATION.name() : UsedFor.REMOVE_FROM_OPERATION.name()));
 		if(userInterfaceAction == null)
 			userInterfaceAction = UserInterfaceAction.OPEN_VIEW_IN_DIALOG;

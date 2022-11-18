@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
 import org.cyk.utility.__kernel__.DependencyInjection;
 import org.cyk.utility.__kernel__.collection.CollectionHelper;
 import org.cyk.utility.__kernel__.field.FieldHelper;
@@ -30,6 +28,7 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.InputTex
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.input.SelectOneCombo;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Cell;
 import org.cyk.utility.persistence.query.Filter;
+import org.cyk.utility.rest.ResponseHelper;
 import org.cyk.utility.service.client.Controller;
 import org.cyk.utility.service.client.SpecificController;
 
@@ -103,6 +102,8 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	public void __addInputsByBasedOnFieldsNames__() {
 		super.__addInputsByBasedOnFieldsNames__();
 		addInputSelectOneByBaseFieldName("exercise");
+		addInputSelectOneByBaseFieldName("operation");
+		addInputSelectOneByBaseFieldName("addedToSelectedOperation");
 		addInputAutoCompleteByBaseFieldName("activity");
 		/*
 		addInputSelectOneByBaseFieldName("operation");
@@ -242,7 +243,7 @@ public class ImputationFilterController extends AbstractFilterController impleme
 		if(FIELD_SEARCH_INPUT_TEXT.equals(fieldName) || (input != null && input == searchInputText))
 			return Parameters.SEARCH;
 		if(FIELD_ADDED_TO_SELECTED_OPERATION_SELECT_ONE.equals(fieldName) ||(input != null && input == addedToSelectedOperationSelectOne))
-			return Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION;
+			return Parameters.ADDED_TO_SPECIFIED_OPERATION;
 		return super.buildParameterName(fieldName, input);
 	}
 	
@@ -258,17 +259,17 @@ public class ImputationFilterController extends AbstractFilterController impleme
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityAutoComplete.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,activityAutoComplete,Cell.FIELD_WIDTH,9));
 		}
-		/*
+		
 		if(operationSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,operationSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,1));
-			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,operationSelectOne,Cell.FIELD_WIDTH,5));
+			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,operationSelectOne,Cell.FIELD_WIDTH,9));
 		}
 		
 		if(addedToSelectedOperationSelectOne != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,addedToSelectedOperationSelectOne.getOutputLabel(),Cell.FIELD_WIDTH,2));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,addedToSelectedOperationSelectOne,Cell.FIELD_WIDTH,1));
 		}
-		
+		/*
 		if(codesInputText != null) {
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,codesInputText.getOutputLabel(),Cell.FIELD_WIDTH,1));
 			cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,codesInputText,Cell.FIELD_WIDTH,11));
@@ -280,14 +281,14 @@ public class ImputationFilterController extends AbstractFilterController impleme
 		}
 		*/
 		Integer width = 12;
-		/*if(UsedFor.ADD_TO_OPERATION.equals(usedFor) || UsedFor.REMOVE_FROM_OPERATION.equals(usedFor)) {
+		if(UsedFor.ADD_TO_OPERATION.equals(usedFor) || UsedFor.REMOVE_FROM_OPERATION.equals(usedFor)) {
 			if(UsedFor.ADD_TO_OPERATION.equals(usedFor))
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.TRUE, Boolean.TRUE),Cell.FIELD_WIDTH,8));
 			else if(UsedFor.REMOVE_FROM_OPERATION.equals(usedFor))
 				cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,buildAddToOrRemoveFromOperationCommandButton(this, Boolean.FALSE, Boolean.TRUE),Cell.FIELD_WIDTH,8));
 			width = 4;
 			isInitialValue = Boolean.FALSE;
-		}*/
+		}
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,filterCommandButton,Cell.FIELD_WIDTH,width));
 		
 		return cellsMaps;
@@ -314,19 +315,18 @@ public class ImputationFilterController extends AbstractFilterController impleme
 				OperationController controller = DependencyInjection.inject(OperationController.class);
 				Response response;
 				Collection<Imputation> imputations = CollectionHelper.cast(Imputation.class,filterController.getCollection().getSelectionAsCollection());
-				/*if(CollectionHelper.isEmpty(imputations)) {
+				if(CollectionHelper.isEmpty(imputations)) {
 					if(add)
-						response = controller.addActByFilter(filterController.getOperation(), filter, existingIgnorable);
+						response = controller.addImputationByFilter(filterController.getOperation(), filter, existingIgnorable);
 					else
-						response = controller.removeActByFilter(filterController.getOperation(), filter, existingIgnorable);
+						response = controller.removeImputationByFilter(filterController.getOperation(), filter, existingIgnorable);
 				}else {
 					if(add)
-						response = controller.addAct(filterController.getOperation(), imputations, existingIgnorable);
+						response = controller.addImputation(filterController.getOperation(), imputations, existingIgnorable);
 					else
-						response = controller.removeAct(filterController.getOperation(), imputations, existingIgnorable);
-				}*/
-				//return ResponseHelper.getEntity(String.class, response);	
-				return null;
+						response = controller.removeImputation(filterController.getOperation(), imputations, existingIgnorable);
+				}
+				return ResponseHelper.getEntity(String.class, response);	
 			}
 		},CommandButton.FIELD_STYLE_CLASS,"cyk-float-left");
 	}
@@ -411,13 +411,13 @@ public class ImputationFilterController extends AbstractFilterController impleme
 	public static Filter.Dto populateFilter(Filter.Dto filter,ImputationFilterController controller,Boolean initial) {
 		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.EXERCISE_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.exerciseInitial : controller.getExercise()), filter);
 		filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ACTIVITY_IDENTIFIER, FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.activityInitial : controller.getActivity()), filter);
-		/*
+		
 		String operationIdentifier = (String) FieldHelper.readSystemIdentifier(Boolean.TRUE.equals(initial) ? controller.operationInitial : controller.getOperation());
 		if(StringHelper.isNotBlank(operationIdentifier)) {
 			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.OPERATION_IDENTIFIER, operationIdentifier, filter);
-			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ACT_ADDED_TO_SPECIFIED_OPERATION,Boolean.TRUE.equals(initial) ? controller.addedToSelectedOperationInitial : controller.getAddedToSelectedOperation(), filter);
+			filter = Filter.Dto.addFieldIfValueNotBlank(Parameters.ADDED_TO_SPECIFIED_OPERATION,Boolean.TRUE.equals(initial) ? controller.addedToSelectedOperationInitial : controller.getAddedToSelectedOperation(), filter);
 		}
-		
+		/*
 		String codesAsString = Boolean.TRUE.equals(initial) ? controller.codesInitial : controller.getCodes();
 		if(StringHelper.isNotBlank(codesAsString)) {
 			String[] codesArray = StringUtils.split(codesAsString, ",");

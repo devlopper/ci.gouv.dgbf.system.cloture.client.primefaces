@@ -22,10 +22,14 @@ import org.cyk.utility.client.controller.web.jsf.primefaces.model.layout.Layout;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.MenuItem;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu;
 import org.cyk.utility.client.controller.web.jsf.primefaces.model.menu.TabMenu.Tab;
+import org.cyk.utility.client.controller.web.jsf.primefaces.model.output.OutputText;
 import org.cyk.utility.service.client.Controller;
 
 import ci.gouv.dgbf.system.cloture.client.act.ActFilterController;
 import ci.gouv.dgbf.system.cloture.client.act.ActListPage;
+import ci.gouv.dgbf.system.cloture.client.imputation.ImputationFilterController;
+import ci.gouv.dgbf.system.cloture.client.imputation.ImputationListPage;
+import ci.gouv.dgbf.system.cloture.server.api.persistence.Act;
 import ci.gouv.dgbf.system.cloture.server.api.persistence.Parameters;
 import ci.gouv.dgbf.system.cloture.server.api.service.OperationDto;
 import ci.gouv.dgbf.system.cloture.server.client.rest.Operation;
@@ -92,12 +96,21 @@ public class OperationReadPage extends AbstractPageContainerManagedImpl implemen
 				}
 			}),Cell.FIELD_WIDTH,12));
 		
-		ActFilterController filterController = new ActFilterController();
-		filterController.setOperationInitial(operation);
-		filterController.setAddedToSelectedOperationInitial(Boolean.TRUE);
-		filterController.setRenderType(AbstractFilterController.RenderType.NONE);
-		DataTable actsDataTable = ActListPage.buildDataTable(ActFilterController.class,filterController,ActListPage.class,this/*,ActListPage.ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG*/);
+		ActFilterController actsFilterController = new ActFilterController();
+		actsFilterController.setOperationInitial(operation);
+		actsFilterController.setAddedToSelectedOperationInitial(Boolean.TRUE);
+		actsFilterController.setRenderType(AbstractFilterController.RenderType.NONE);
+		DataTable actsDataTable = ActListPage.buildDataTable(ActFilterController.class,actsFilterController,ActListPage.class,this/*,ActListPage.ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG*/);
+		actsDataTable.setTitle(OutputText.buildFromValue(ci.gouv.dgbf.system.cloture.server.api.persistence.Act.NAME_PLURAL));
 		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,actsDataTable,Cell.FIELD_WIDTH,12));
+		
+		ImputationFilterController imputationFilterController = new ImputationFilterController();
+		imputationFilterController.setOperationInitial(operation);
+		imputationFilterController.setAddedToSelectedOperationInitial(Boolean.TRUE);
+		imputationFilterController.setRenderType(AbstractFilterController.RenderType.NONE);
+		DataTable imputationsDataTable = ImputationListPage.buildDataTable(ImputationFilterController.class,imputationFilterController,ImputationListPage.class,this/*,ActListPage.ADD_OR_REMOVE_ACT_COMMAND_USER_INTERFACE_ACTION,UserInterfaceAction.OPEN_VIEW_IN_DIALOG*/);
+		imputationsDataTable.setTitle(OutputText.buildFromValue(ci.gouv.dgbf.system.cloture.server.api.persistence.Imputation.NAME_PLURAL));
+		cellsMaps.add(MapHelper.instantiate(Cell.FIELD_CONTROL,imputationsDataTable,Cell.FIELD_WIDTH,12));
 	}
 	
 	private void buildTabActs(Collection<Map<Object,Object>> cellsMaps) {
